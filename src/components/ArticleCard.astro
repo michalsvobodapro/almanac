@@ -16,10 +16,12 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
   data-source-id={data.sourceId}
   data-category={data.category}
 >
-  {coverHref && (
+  {coverHref ? (
     <a class="article-card__cover" href={href} aria-hidden="true" tabindex="-1">
       <img src={coverHref} alt={data.coverAlt ?? ''} loading="lazy" decoding="async" />
     </a>
+  ) : (
+    <span class={`article-card__band article-card__band--${data.category}`} aria-hidden="true"></span>
   )}
   <div class="article-card__body">
     <div class="article-card__head">
@@ -67,6 +69,19 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
     transition: transform 400ms ease;
   }
   .article-card:hover .article-card__cover img { transform: scale(1.03); }
+
+  .article-card__band {
+    display: block;
+    height: 4px;
+    background: var(--band-color);
+  }
+  .article-card__band--conservative   { --band-color: var(--color-cat-conservative); }
+  .article-card__band--endodontics    { --band-color: var(--color-cat-endodontics); }
+  .article-card__band--periodontology { --band-color: var(--color-cat-periodontology); }
+  .article-card__band--implantology   { --band-color: var(--color-cat-implantology); }
+  .article-card__band--orthodontics   { --band-color: var(--color-cat-orthodontics); }
+  .article-card__band--other          { --band-color: var(--color-cat-other); }
+
   .article-card__body {
     display: flex;
     flex-direction: column;
