@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-05-09T20:11:06.254725+00:00",
+  "lastRunAt": "2026-05-10T05:00:42.600889+00:00",
   "sources": [
     {
       "id": "anthropic-news",
@@ -8,7 +8,7 @@
       "section": "ai",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-09T20:10:59.966598Z",
+      "lastFetched": "2026-05-10T05:00:36.686284Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -18,9 +18,10 @@
       "url": "https://importai.substack.com/feed",
       "section": "ai",
       "language": "en",
-      "status": "ok",
-      "lastFetched": "2026-05-09T20:11:03.541950Z",
-      "itemsLastRun": 20
+      "status": "error",
+      "lastFetched": "2026-05-10T05:00:40.448465Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 403"
     },
     {
       "id": "simonw",
@@ -29,8 +30,8 @@
       "section": "ai",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-09T20:11:03.705681Z",
-      "itemsLastRun": 30
+      "lastFetched": "2026-05-10T05:00:40.467822Z",
+      "itemsLastRun": 0
     },
     {
       "id": "hf-papers",
@@ -39,7 +40,7 @@
       "section": "ai",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-09T20:11:03.864689Z",
+      "lastFetched": "2026-05-10T05:00:40.572720Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 502"
     },
@@ -50,9 +51,9 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-09T20:11:04.258353Z",
+      "lastFetched": "2026-05-10T05:00:41.116326Z",
       "itemsLastRun": 0,
-      "errorMessage": "HTTP 500"
+      "errorMessage": "HTTP 403"
     },
     {
       "id": "jada",
@@ -61,7 +62,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-09T20:11:04.522231Z",
+      "lastFetched": "2026-05-10T05:00:41.239647Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -72,8 +73,8 @@
       "section": "dentistry",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-09T20:11:04.826769Z",
-      "itemsLastRun": 1
+      "lastFetched": "2026-05-10T05:00:41.556778Z",
+      "itemsLastRun": 0
     },
     {
       "id": "efp",
@@ -82,7 +83,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-09T20:11:05.732535Z",
+      "lastFetched": "2026-05-10T05:00:41.946860Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     }
