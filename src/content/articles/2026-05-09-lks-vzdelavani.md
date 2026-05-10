@@ -10,8 +10,6 @@ summaryDeep: |
   Návrh připravený pracovní skupinou ČSK reaguje na opakované signály od mladých lékařů i jejich zaměstnavatelů, že přechod z fakulty do samostatné praxe je v Česku příliš strmý. Klíčové prvky návrhu: dvouletá klinická praxe pod supervizí akreditovaného školitele, strukturovaný portfolio s minimálními zákroky, jednotný framework supervize napříč regiony.
 
   Kontext je důležitý — sousední země (Německo, Rakousko) mají různé verze chráněné formy mladého lékaře, ale plošná česká reforma by byla velkým strukturálním zásahem. Otázky, které ČSK explicitně otevírá: kdo financuje supervizora, jak vypadá akreditace pracoviště, vztah k současné atestaci. Diskuse je otevřena do října, v listopadu sněm rozhodne o dalších krocích. Pro aktuální studenty by změna platila až pro ročníky 2028+.
-coverImage: /og-cache/placeholder-other.svg
-coverAlt: "Practice and policy — postgraduate education reform"
 excerptFull: |
   Reforma postgraduálního vzdělávání zubních lékařů — návrh ČSK k diskusi.
 

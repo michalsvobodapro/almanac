@@ -30,3 +30,6 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 *.log
+
+# Claude Code worktrees + local session state
+.claude/

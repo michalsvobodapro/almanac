@@ -10,8 +10,6 @@ summaryDeep: |
   120 extracted human molars were instrumented to a standardized apical preparation, then randomly split between single-cone obturation with calcium silicate-based bioceramic sealer (BioRoot RCS, Endosequence BC) and warm vertical compaction with AH Plus and gutta-percha. Apical microleakage was measured by glucose penetration assay over 30 days, with cross-validation by micro-CT void analysis.
 
   Microleakage was statistically equivalent between groups (mean 0.18 mg/dL vs 0.21 mg/dL; p=0.34). Micro-CT showed slightly fewer voids in the warm-vertical group, but the difference (1.8% vs 2.4% void volume) didn't translate to leakage difference. The clinically relevant takeaway: single-cone with bioceramic sealer takes about half the chair time of warm vertical and requires no continuous-wave heat source. For most general practice, that operator-time argument is decisive — assuming in vivo studies replicate.
-coverImage: /og-cache/placeholder-endodontics.svg
-coverAlt: "Endodontics — obturation technique"
 excerptFull: |
   Aim: To compare apical microleakage of single-cone obturation with bioceramic sealer versus warm vertical compaction with epoxy resin sealer in extracted human molars.
 

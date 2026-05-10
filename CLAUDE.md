@@ -25,10 +25,22 @@ A static news portal aggregating dentistry news across six specialties (conserva
 
 ## Workflow rules (inherited from ~/claude/CLAUDE.md)
 
-- Never commit to `main` — feature branches only (`feature/`, `fix/`, `chore/`)
+- Never commit to `main` — feature branches only (`feature/`, `fix/`, `chore/`). The user-level `guard-main-branch.sh` hook enforces this; it fires from `~/.claude/hooks/`.
 - Push branches to remote immediately after creation
 - Never blur the line between planning and implementing
 - Track work in `tasks/todo.md`
+
+## Project config — `.claude/project.json`
+
+Drives the parameterization of user-level skills and hooks (live at `~/.claude/`). Key fields for Almanac:
+
+- `ticket_prefix: "MIC-"` — Linear tickets share the MIC team with Alveodont and Alabooster (sibling dental projects). Project on Linear: "Almanac" under team `michalsvoboda`.
+- `base_port: 4321` — Astro's dev default. The user-level `/server` skill assumes uvicorn and **does not apply here**. Use `pnpm dev` directly.
+- `db_file: null` — no database.
+- `github_repo: "michalsvobodapro/almanac"` — used by `/commit`, future `/ship`, and any GitHub-aware skill.
+- `linear: { … }` — populated with the MIC team UUID + Almanac project UUID. Generalized `/plan` and `/start` will create MIC-prefixed tickets under the Almanac project.
+
+If you change the schema (e.g. add a custom Almanac-only field), reflect it in `~/.claude-personal/projects/-Users-michalsvoboda-claude/memory/reference_claude_config_layout.md` so future sessions know.
 
 ## Generated files
 

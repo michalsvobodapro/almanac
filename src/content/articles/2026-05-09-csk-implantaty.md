@@ -10,8 +10,6 @@ summaryDeep: |
   Stanovisko reaguje na rostoucí počet stížností pacientů na komplikace implantologických zákroků provedených u praktiků bez specializace v parodontologii nebo orální chirurgii. ČSK po dvouleté přípravě formuluje minimální vzdělanostní mřížku: minimálně 80 hodin akreditovaného postgraduálního kurzu pokrývajícího chirurgickou i protetickou fázi, a doložená samostatná praxe minimálně 30 zavedených implantátů pod supervizí.
 
   Stanovisko není zákonem ani vyhláškou — je to komorové doporučení. Praktici, kteří podmínky nesplní, nepřijdou o licenci, ale vystavují se vyššímu riziku v případě stížnosti k revizní komisi. ČSK zároveň otevírá registr akreditovaných kurzů pro zájemce. Pojišťovny podle kuloárních informací uvažují o návaznosti — stanovisko by mohlo být brzy citováno jako standard při sporech o kompetence.
-coverImage: /og-cache/placeholder-implantology.svg
-coverAlt: "Implantology — implant placement and prosthetics"
 excerptFull: |
   Stanovisko představenstva ČSK k provádění dentální implantologie zubními lékaři bez specializace.
 

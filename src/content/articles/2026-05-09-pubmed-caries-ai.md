@@ -10,8 +10,6 @@ summaryDeep: |
   The trial enrolled 2,400 bitewing radiographs from 14 mixed urban and rural clinics, scoring proximal caries against an arbitrated reference standard from three blinded specialists. The commercial CNN under test reached sensitivity 0.91 and specificity 0.94 — statistically indistinguishable from senior radiologists (0.93 / 0.95) and meaningfully better than unaided general dentists (0.78 / 0.92).
 
   The interesting finding is the augmentation effect. Junior dentists working with the tool's overlay reached sensitivity 0.89, slightly above unaided seniors. That's the configuration most clinics would actually deploy, and it suggests AI caries detection is closer to a workforce-multiplier than a workforce-replacer. Cost-effectiveness data is promised in a follow-on paper; clinic-level integration cost (license, integration with imaging software, training) is the gap left to fill before a full economic argument is on the table.
-coverImage: /og-cache/placeholder-conservative.svg
-coverAlt: "Conservative dentistry — caries and restorative"
 excerptFull: |
   Background and aim: Recent AI tools claim radiologist-level performance on proximal caries detection, but most evidence comes from single-site retrospective datasets. We tested whether a commercially available CNN (CariesGuard 2.4) maintains its accuracy under prospective multi-center conditions.
 
