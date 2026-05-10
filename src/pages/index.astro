@@ -9,9 +9,12 @@ import { formatDate } from '../lib/format';
 const allArticles = await getCollection('articles');
 const allDigests = await getCollection('digests');
 
+// Latest digest WITH content. Empty stubs (zero items) fall through to the
+// previous edition so the home never shows a blank page on a quiet day.
 const latestDigest = allDigests
   .slice()
-  .sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
+  .sort((a, b) => b.data.date.localeCompare(a.data.date))
+  .find((d) => d.data.aiSlugs.length + d.data.dentistrySlugs.length > 0);
 
 let hero: any = null;
 let rest: any[] = [];
