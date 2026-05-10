@@ -46,6 +46,8 @@ class RawItem(BaseModel):
     url: str
     published_at: datetime | None = None
     excerpt: str | None = None
+    excerpt_full: str | None = None
+    cover_image_url: str | None = None
     author: str | None = None
     first_seen_at: datetime
     fetched_at: datetime
@@ -59,6 +61,7 @@ class RankedItem(BaseModel):
     category: Category
     title: str
     summary: str
+    summary_deep: str | None = None
     tags: list[str] = Field(default_factory=list, max_length=4)
     related_ids: list[str] = Field(default_factory=list, max_length=3)
 
@@ -81,11 +84,16 @@ class ArticleFrontmatter(BaseModel):
     category: Category
     rank: int = Field(ge=1, le=20)
     summary: str
+    summaryDeep: str | None = None
     summaryLang: Lang
     sourceId: str
     sourceName: str
     sourceUrl: HttpUrl
     excerpt: str | None = None
+    excerptFull: str | None = None
+    coverImage: str | None = None
+    coverAlt: str | None = None
+    coverSourceUrl: HttpUrl | None = None
     author: str | None = None
     tags: list[str] = Field(default_factory=list)
     relatedSlugs: list[str] = Field(default_factory=list)
