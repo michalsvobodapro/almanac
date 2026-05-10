@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-05-10T05:00:42.600889+00:00",
+  "lastRunAt": "2026-05-10T05:03:12.943945+00:00",
   "sources": [
     {
       "id": "anthropic-news",
@@ -8,7 +8,7 @@
       "section": "ai",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:36.686284Z",
+      "lastFetched": "2026-05-10T05:03:05.651264Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -19,7 +19,7 @@
       "section": "ai",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:40.448465Z",
+      "lastFetched": "2026-05-10T05:03:10.527773Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -30,7 +30,7 @@
       "section": "ai",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-10T05:00:40.467822Z",
+      "lastFetched": "2026-05-10T05:03:10.549968Z",
       "itemsLastRun": 0
     },
     {
@@ -40,7 +40,7 @@
       "section": "ai",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:40.572720Z",
+      "lastFetched": "2026-05-10T05:03:10.656571Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 502"
     },
@@ -51,7 +51,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:41.116326Z",
+      "lastFetched": "2026-05-10T05:03:11.264394Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -62,7 +62,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:41.239647Z",
+      "lastFetched": "2026-05-10T05:03:11.387346Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -73,7 +73,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-10T05:00:41.556778Z",
+      "lastFetched": "2026-05-10T05:03:11.792312Z",
       "itemsLastRun": 0
     },
     {
@@ -83,7 +83,7 @@
       "section": "dentistry",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:00:41.946860Z",
+      "lastFetched": "2026-05-10T05:03:12.173486Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     }
