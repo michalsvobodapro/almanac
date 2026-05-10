@@ -10,8 +10,6 @@ summaryDeep: |
   The 600-patient cohort split evenly between adjunctive locally-delivered antimicrobials and mechanical-therapy-alone arms, with five-year probing depth, clinical attachment level, and bleeding-on-probing as primary endpoints. Stage III periodontitis was the inclusion focus; smokers and uncontrolled diabetics were stratified.
 
   At five years, the difference in pooled PD reduction was 0.08 mm — well within measurement noise. Bleeding indices similarly converged. The authors' nuance, often skipped in coverage of this paper: the antimicrobial arm did better at 6 and 12 months, and crucially in deep residual pockets (>6 mm) at sites that didn't fully respond to initial mechanical therapy. The verdict isn't "stop using gels," it's "stop using them as routine adjuncts for moderate disease."
-coverImage: /og-cache/placeholder-periodontology.svg
-coverAlt: "Periodontology — gum and supporting tissue therapy"
 excerptFull: |
   Aim: To assess long-term effects of locally delivered antimicrobials (LDA) — chlorhexidine 2.5 mg chip and minocycline 1 mg microspheres — as adjuncts to non-surgical periodontal therapy in stage III periodontitis over five years.
 

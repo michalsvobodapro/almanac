@@ -10,8 +10,6 @@ summaryDeep: |
   The cohort drew from eight European specialist centres treating severely atrophic maxillae (Cawood-Howell V or VI). 412 patients received 1,047 zygomatic implants in quad-zygoma or zygoma-conventional hybrid configurations, all with prosthetic loading within 6 months. Mean follow-up was 10.4 years.
 
   Cumulative implant survival was 96.2% at 10 years. The dominant late complication was maxillary sinusitis at 8.1% — most cases (>70%) were managed conservatively or with FESS, with only 0.9% of implants requiring removal due to sinusitis. Soft-tissue dehiscence at the apical screw access remained a persistent low-grade issue (4.3% of implants over the follow-up). The headline finding: in centres with adequate volume (>30 zygomatic cases/year), survival approaches conventional implant outcomes in non-atrophic bone, materially shifting the calculus against staged grafting.
-coverImage: /og-cache/placeholder-implantology.svg
-coverAlt: "Implantology — zygomatic implant placement"
 excerptFull: |
   Background: Severely atrophic maxillae (Cawood-Howell V/VI) historically required extensive bone grafting prior to implant placement. Zygomatic implants offer graftless rehabilitation, but long-term outcome data from multicenter cohorts has been limited.
 

@@ -10,8 +10,6 @@ summaryDeep: |
   The S3-level update is the first major revision of the EFP's stage IV guideline since 2020. The downgrade isn't a rejection of regenerative surgery — it's a calibration. Real-world outcomes from registries in Germany, Italy, and the Nordics have shown wider variance than the trial data suggested, particularly for furcation defects beyond grade II.
 
   The new "may consider in selected cases" framing aligns with stronger evidence for non-surgical therapy outcomes in moderate stage IV disease, and clearer criteria for when surgical intervention is warranted (deep intrabony defects with residual pockets >6 mm after thorough non-surgical therapy, in compliant patients with controlled risk factors). Regenerative materials remain unchanged — the change is about patient selection, not technique.
-coverImage: /og-cache/placeholder-periodontology.svg
-coverAlt: "Periodontology — clinical practice guideline"
 excerptFull: |
   EFP S3-level Clinical Practice Guideline — Stage IV Periodontitis: 2026 Update.
 

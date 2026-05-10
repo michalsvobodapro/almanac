@@ -10,8 +10,6 @@ summaryDeep: |
   The six-year follow-up enrolled 240 Class I and II posterior restorations in 156 patients, randomly allocated to bulk-fill (Tetric PowerFill, SonicFill 3, Filtek One) or 2 mm incremental layering with the same flowable base material. Restorations were placed by 12 calibrated operators across two centres.
 
   Survival was 93% bulk-fill vs 94% incremental — the difference is statistically and clinically meaningless. Marginal staining, post-operative sensitivity, secondary caries, and FDI surface texture scores were equivalent. The one signal of interest: bulk-fill restorations placed in deep cavities (>4 mm) showed slightly higher rates of marginal discoloration at the gingival margin, suggesting incremental layering remains the safer call when the box gets deep. For routine occlusal restorations, the operator-time argument now wins decisively.
-coverImage: /og-cache/placeholder-conservative.svg
-coverAlt: "Conservative dentistry — composite restoration"
 excerptFull: |
   Aim: To compare long-term clinical performance of bulk-fill versus incrementally layered resin composite restorations in posterior teeth over six years.
 
