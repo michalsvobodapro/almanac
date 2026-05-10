@@ -1,0 +1,83 @@
+name: Daily Digest
+
+on:
+  schedule:
+    # 04:00 UTC = 06:00 CEST (summer) / 05:00 CET (winter). DST drift accepted.
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write     # commit generated articles back to main
+  pages: write        # deploy to Pages
+  id-token: write     # OIDC for deploy-pages
+
+concurrency:
+  group: "digest"
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Python (pipeline) ───────────────────────────────────────────────
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: uv sync --frozen
+
+      # ── Node (Astro) ───────────────────────────────────────────────────
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # ── Run pipeline ───────────────────────────────────────────────────
+      - name: Run digest pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TZ: Europe/Prague
+        run: uv run python scripts/digest.py
+
+      - name: Commit generated content
+        run: |
+          git config user.name  "almanac-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add src/content/articles/ src/content/digests/ data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "digest: $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      # ── Build & upload ─────────────────────────────────────────────────
+      - name: Build site
+        env:
+          ALMANAC_GH_USER: ${{ github.repository_owner }}
+        run: pnpm build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: digest
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

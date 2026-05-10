@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SourceStatusRow from '../components/SourceStatusRow.astro';
+import EmptyState from '../components/EmptyState.astro';
+import sourceStatusData from '../../data/source-status.json';
+
+interface SourceStatus {
+  id: string;
+  name: string;
+  url: string;
+  section: 'ai' | 'dentistry';
+  language: 'en' | 'cs';
+  status: 'ok' | 'error' | 'never';
+  lastFetched?: string;
+  itemsLastRun?: number;
+  errorMessage?: string;
+}
+
+const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? [])
+  .slice()
+  .sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<BaseLayout title="Sources" description="The feeds Almanac watches every morning, with last-fetch status.">
+  <div class="container">
+    <header class="sources-head">
+      <span class="kicker">Sources</span>
+      <h1>Where the news comes from</h1>
+      <p>Status of every feed Almanac watches. Updated each morning at 06:00 Prague.</p>
+    </header>
+
+    {sources.length === 0 ? (
+      <EmptyState title="No status yet" message="Status will populate after the first run." />
+    ) : (
+      <div class="sources-table-wrap">
+        <table class="sources-table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Last fetched</th>
+              <th class="num">Items</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sources.map((s) => <SourceStatusRow {...s} />)}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .sources-head { margin-bottom: var(--space-6); }
+  .sources-head h1 { margin: var(--space-2) 0; }
+  .sources-head p { color: var(--color-text-muted); margin: 0; }
+
+  .sources-table-wrap { overflow-x: auto; }
+  .sources-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+  }
+  .sources-table th {
+    text-align: left;
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-rule-strong);
+  }
+  .sources-table th.num { text-align: right; }
+  .sources-table :global(td) {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-rule);
+    vertical-align: middle;
+  }
+</style>

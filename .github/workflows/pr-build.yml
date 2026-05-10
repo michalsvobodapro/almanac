@@ -1,0 +1,50 @@
+name: PR Build
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: uv sync --frozen
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint Python
+        run: uv run ruff check scripts
+
+      - name: Run tests
+        run: uv run pytest scripts/tests
+
+      - name: Build site (no API key, no commit, no deploy)
+        env:
+          ALMANAC_GH_USER: ${{ github.repository_owner }}
+        run: pnpm build
+
+      - name: Guard against committed API keys
+        run: |
+          if git grep -nE 'sk-ant-[A-Za-z0-9_-]{10,}' -- ':(exclude).github/workflows'; then
+            echo "::error::Possible Anthropic API key committed to repo"
+            exit 1
+          fi

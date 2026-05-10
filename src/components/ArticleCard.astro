@@ -1,0 +1,78 @@
+---
+import SectionBadge from './SectionBadge.astro';
+import SourceBadge from './SourceBadge.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { article: CollectionEntry<'articles'>; }
+const { article } = Astro.props;
+const { data } = article;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = `${base}/articles/${article.slug}/`;
+---
+
+<article
+  class="article-card"
+  data-source-id={data.sourceId}
+  data-section={data.section}
+>
+  <div class="article-card__head">
+    <SectionBadge section={data.section} />
+  </div>
+  <h3 class="article-card__title">
+    <a href={href}>{data.title}</a>
+  </h3>
+  <p class="article-card__summary">{data.summary}</p>
+  <div class="article-card__foot">
+    <SourceBadge
+      sourceName={data.sourceName}
+      sourceUrl={data.sourceUrl}
+      lang={data.summaryLang}
+    />
+  </div>
+</article>
+
+<style>
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-elevated);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  .article-card:hover {
+    border-color: var(--color-rule-strong);
+    box-shadow: var(--shadow-md);
+  }
+  .article-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .article-card__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    line-height: var(--lh-snug);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .article-card__title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .article-card__title a:hover { color: var(--color-accent); }
+  .article-card__summary {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    line-height: var(--lh-base);
+    margin: 0;
+  }
+  .article-card__foot {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-rule);
+  }
+</style>

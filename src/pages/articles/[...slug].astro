@@ -1,0 +1,130 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionBadge from '../../components/SectionBadge.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
+import RelatedRail from '../../components/RelatedRail.astro';
+import DateLine from '../../components/DateLine.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+interface Props { article: CollectionEntry<'articles'>; }
+const { article } = Astro.props;
+const { data } = article;
+
+const allArticles = await getCollection('articles');
+const related = data.relatedSlugs
+  .map((s) => allArticles.find((a) => a.slug === s))
+  .filter((a): a is NonNullable<typeof a> => a !== undefined)
+  .slice(0, 3);
+---
+
+<BaseLayout title={data.title} description={data.summary}>
+  <article class="container container--narrow">
+    <header class="article-page__head">
+      <div class="article-page__meta">
+        <SectionBadge section={data.section} />
+        <DateLine date={data.date} />
+      </div>
+      <h1 class="article-page__title">{data.title}</h1>
+      {data.title !== data.originalTitle && (
+        <p class="article-page__original">
+          <span class="eyebrow">Original headline</span>
+          <span>{data.originalTitle}</span>
+        </p>
+      )}
+    </header>
+
+    <p class="article-page__summary">{data.summary}</p>
+
+    <div class="article-page__source">
+      <SourceBadge
+        sourceName={data.sourceName}
+        sourceUrl={data.sourceUrl}
+        lang={data.summaryLang}
+      />
+      <a class="article-page__link" href={data.sourceUrl} target="_blank" rel="noopener noreferrer">
+        Read at source →
+      </a>
+    </div>
+
+    {data.tags.length > 0 && (
+      <ul class="article-page__tags" role="list">
+        {data.tags.map((t) => <li>#{t}</li>)}
+      </ul>
+    )}
+
+    <RelatedRail articles={related} />
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page__head { margin-bottom: var(--space-6); }
+  .article-page__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .article-page__title {
+    font-size: clamp(1.75rem, 4vw, var(--fs-3xl));
+    font-weight: 600;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .article-page__original {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .article-page__original .eyebrow { display: block; margin-bottom: 2px; }
+  .article-page__summary {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: var(--lh-snug);
+    color: var(--color-text);
+    margin: var(--space-6) 0;
+    font-weight: 400;
+  }
+  .article-page__source {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .article-page__link {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  .article-page__link:hover { color: var(--color-accent-hover); }
+  .article-page__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+  }
+  .article-page__tags li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    padding: 2px 8px;
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-sm);
+  }
+</style>

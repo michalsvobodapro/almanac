@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Not found" description="That page doesn't exist.">
+  <div class="container container--narrow">
+    <div class="notfound">
+      <span class="kicker">404</span>
+      <h1>Page not found</h1>
+      <p>The page you're looking for moved, was renamed, or never existed.</p>
+      <p><a href={`${base}/`}>Back to today's edition →</a></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound { padding: var(--space-8) 0; }
+  .notfound h1 { margin: var(--space-3) 0 var(--space-4); }
+  .notfound p { color: var(--color-text-muted); margin: 0 0 var(--space-3); }
+  .notfound a { color: var(--color-accent); }
+</style>

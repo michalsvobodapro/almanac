@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { formatDate } from '../../lib/format';
+
+const digests = (await getCollection('digests'))
+  .sort((a, b) => b.data.date.localeCompare(a.data.date));
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Archive" description="Browse past daily digests.">
+  <div class="container container--narrow">
+    <header class="archive-head">
+      <span class="kicker">Archive</span>
+      <h1>Every edition</h1>
+      <p>Each morning's digest, dated and indexed.</p>
+    </header>
+
+    {digests.length === 0 ? (
+      <EmptyState title="No archive yet" message="The first edition lands tomorrow." />
+    ) : (
+      <ol class="archive-list" role="list">
+        {digests.map((d) => (
+          <li>
+            <a href={`${base}/archive/${d.data.date}/`}>
+              <span class="archive-list__date">{formatDate(d.data.date)}</span>
+              <span class="archive-list__intro">{d.data.intro}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-head { margin-bottom: var(--space-7); }
+  .archive-head h1 { margin: var(--space-2) 0; }
+  .archive-head p { color: var(--color-text-muted); margin: 0; }
+
+  .archive-list { padding: 0; margin: 0; }
+  .archive-list li { border-top: 1px solid var(--color-rule); }
+  .archive-list li:last-child { border-bottom: 1px solid var(--color-rule); }
+  .archive-list a {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-5);
+    padding: var(--space-5) 0;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background var(--transition-fast);
+  }
+  .archive-list a:hover { background: var(--color-bg-subtle); }
+  .archive-list__date {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .archive-list__intro {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    line-height: var(--lh-snug);
+  }
+  @media (max-width: 640px) {
+    .archive-list a { grid-template-columns: 1fr; gap: var(--space-2); }
+  }
+</style>

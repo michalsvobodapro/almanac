@@ -1,0 +1,55 @@
+---
+const year = new Date().getFullYear();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__line">
+      <strong>Almanac</strong> — built daily at 06:00 Prague.
+      &copy; {year}.
+    </p>
+    <nav class="site-footer__nav" aria-label="Footer">
+      <a href={`${base}/about/`}>About</a>
+      <a href={`${base}/sources/`}>Sources</a>
+      <a href={`${base}/archive/`}>Archive</a>
+      <a href={`${base}/rss.xml`}>RSS</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-rule);
+    padding-block: var(--space-6);
+    margin-top: var(--space-8);
+    background: var(--color-bg-subtle);
+  }
+  .site-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+  }
+  .site-footer__line {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .site-footer__line strong {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .site-footer__nav {
+    display: flex;
+    gap: var(--space-4);
+    font-size: var(--fs-sm);
+  }
+  .site-footer__nav a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  .site-footer__nav a:hover { color: var(--color-text); }
+</style>

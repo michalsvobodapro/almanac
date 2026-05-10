@@ -1,0 +1,73 @@
+---
+import LanguageChip from './LanguageChip.astro';
+import { relativeTime } from '../lib/format';
+
+interface Props {
+  id: string;
+  name: string;
+  url: string;
+  section: 'ai' | 'dentistry';
+  language: 'en' | 'cs';
+  status: 'ok' | 'error' | 'never';
+  lastFetched?: string;
+  itemsLastRun?: number;
+  errorMessage?: string;
+}
+const { id, name, url, section, language, status, lastFetched, itemsLastRun, errorMessage } = Astro.props;
+---
+
+<tr class="source-row" data-source-id={id} data-section={section}>
+  <td>
+    <a href={url} target="_blank" rel="noopener noreferrer" class="source-row__name">{name}</a>
+    <div class="source-row__meta">
+      <span class="source-row__section">{section}</span>
+      <LanguageChip lang={language} />
+    </div>
+  </td>
+  <td class="source-row__status">
+    <span class:list={['status-dot', `status-dot--${status}`]} aria-hidden="true"></span>
+    {status === 'ok' && 'OK'}
+    {status === 'error' && (errorMessage ?? 'Error')}
+    {status === 'never' && 'Not yet fetched'}
+  </td>
+  <td class="source-row__date">
+    {lastFetched ? relativeTime(lastFetched) : '—'}
+  </td>
+  <td class="source-row__count">
+    {itemsLastRun ?? 0}
+  </td>
+</tr>
+
+<style>
+  .source-row__name {
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .source-row__name:hover { color: var(--color-accent); }
+  .source-row__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: 2px;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .source-row__status, .source-row__date, .source-row__count {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+  }
+  .source-row__count { text-align: right; font-variant-numeric: tabular-nums; }
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: var(--space-2);
+    vertical-align: middle;
+  }
+  .status-dot--ok    { background: var(--color-success); }
+  .status-dot--error { background: var(--color-error); }
+  .status-dot--never { background: var(--color-text-subtle); }
+</style>

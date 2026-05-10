@@ -1,0 +1,21 @@
+---
+import { formatDateTime, formatDate } from '../lib/format';
+
+interface Props {
+  date: Date | string;
+  format?: 'short' | 'long';
+}
+const { date, format = 'short' } = Astro.props;
+const d = typeof date === 'string' ? new Date(date) : date;
+const text = format === 'long' ? formatDateTime(d) : formatDate(d);
+---
+<time class="date-line" datetime={d.toISOString()}>{text}</time>
+
+<style>
+  .date-line {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.02em;
+  }
+</style>

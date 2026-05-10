@@ -1,0 +1,90 @@
+{
+  "lastRunAt": "2026-05-09T20:11:06.254725+00:00",
+  "sources": [
+    {
+      "id": "anthropic-news",
+      "name": "Anthropic News",
+      "url": "https://www.anthropic.com/news/rss.xml",
+      "section": "ai",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-09T20:10:59.966598Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 404"
+    },
+    {
+      "id": "import-ai",
+      "name": "Import AI",
+      "url": "https://importai.substack.com/feed",
+      "section": "ai",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-09T20:11:03.541950Z",
+      "itemsLastRun": 20
+    },
+    {
+      "id": "simonw",
+      "name": "Simon Willison's Weblog",
+      "url": "https://simonwillison.net/atom/everything/",
+      "section": "ai",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-09T20:11:03.705681Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "hf-papers",
+      "name": "Hugging Face Daily Papers",
+      "url": "https://jamesg.blog/hf-papers.xml",
+      "section": "ai",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-09T20:11:03.864689Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 502"
+    },
+    {
+      "id": "pubmed-caries-ai",
+      "name": "PubMed \u2014 Dental AI",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+AI/?limit=20",
+      "section": "dentistry",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-09T20:11:04.258353Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "jada",
+      "name": "JADA",
+      "url": "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada",
+      "section": "dentistry",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-09T20:11:04.522231Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 404"
+    },
+    {
+      "id": "dental-tribune",
+      "name": "Dental Tribune",
+      "url": "https://www.dental-tribune.com/feed/",
+      "section": "dentistry",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-09T20:11:04.826769Z",
+      "itemsLastRun": 1
+    },
+    {
+      "id": "efp",
+      "name": "EFP \u2014 European Federation of Periodontology",
+      "url": "https://www.efp.org/news-events/news/feed/",
+      "section": "dentistry",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-09T20:11:05.732535Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 404"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroStory from '../components/HeroStory.astro';
+import ArticleGrid from '../components/ArticleGrid.astro';
+import EmptyState from '../components/EmptyState.astro';
+import { formatDate } from '../lib/format';
+
+const allArticles = await getCollection('articles');
+const allDigests = await getCollection('digests');
+
+const latestDigest = allDigests
+  .slice()
+  .sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
+
+let hero: any = null;
+let rest: any[] = [];
+
+if (latestDigest) {
+  const heroSlug = latestDigest.data.heroSlug;
+  hero = allArticles.find((a) => a.slug === heroSlug) ?? null;
+
+  const ordered = [...latestDigest.data.aiSlugs, ...latestDigest.data.dentistrySlugs]
+    .filter((s) => s !== heroSlug)
+    .map((s) => allArticles.find((a) => a.slug === s))
+    .filter((a): a is NonNullable<typeof a> => a !== undefined);
+
+  rest = ordered;
+}
+
+const description = latestDigest
+  ? `Almanac for ${formatDate(latestDigest.data.date)} — ${rest.length + (hero ? 1 : 0)} hand-picked stories from AI and dentistry.`
+  : undefined;
+---
+
+<BaseLayout description={description}>
+  <div class="container">
+    {hero && <HeroStory article={hero} />}
+
+    {latestDigest && (
+      <p class="home__intro">{latestDigest.data.intro}</p>
+    )}
+
+    {rest.length > 0 ? (
+      <ArticleGrid articles={rest} />
+    ) : (
+      <EmptyState
+        title="No digest yet"
+        message="The first edition lands tomorrow at 06:00 Prague."
+      />
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .home__intro {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: var(--lh-snug);
+    color: var(--color-text);
+    max-width: 60ch;
+    margin: 0 0 var(--space-7);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+</style>

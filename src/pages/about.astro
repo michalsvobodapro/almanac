@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="About" description="What Almanac is and how it works.">
+  <div class="container container--narrow prose">
+    <span class="kicker">About</span>
+    <h1>A morning brief on AI and dentistry</h1>
+
+    <p>Almanac is a one-page-a-day curated news brief covering two slow-moving but high-stakes worlds: artificial intelligence and clinical dentistry. It exists because reading both feeds manually every morning is a chore — and skipping a day means missing the thing that mattered.</p>
+
+    <h2>What lands here</h2>
+    <p>Each morning at 06:00 Prague, a script fetches every source listed on <a href={`${base}/sources/`}>the sources page</a>. Claude (Sonnet 4.6) reads the candidate items, picks five from each section, and writes a short summary in the source's original language. The result is rendered as static HTML and shipped to GitHub Pages.</p>
+
+    <h2>What does <em>not</em> land here</h2>
+    <p>AI hype with no shipped product. Dental marketing dressed as news. US insurance billing. If a story doesn't change practice, change policy, or change the frontier, it gets cut.</p>
+
+    <h2>Why the bilingual summaries</h2>
+    <p>The Czech dental sources (ČSK, regulatory bodies) are too important to translate away. Czech stays Czech. Everything else is English. Each item is tagged with a language chip so you know what you're getting.</p>
+
+    <h2>The site itself</h2>
+    <p>Built on Astro. Zero JavaScript by default — the only interactive elements are the theme toggle and the settings page. Self-hosted Fraunces and Inter, no Google Fonts at runtime, no analytics, no tracking. The whole repo is open: <a href="https://github.com/">view on GitHub</a>.</p>
+  </div>
+</BaseLayout>

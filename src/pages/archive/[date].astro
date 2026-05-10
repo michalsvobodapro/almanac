@@ -1,0 +1,47 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeroStory from '../../components/HeroStory.astro';
+import ArticleGrid from '../../components/ArticleGrid.astro';
+import { formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const digests = await getCollection('digests');
+  return digests.map((digest) => ({
+    params: { date: digest.data.date },
+    props: { digest },
+  }));
+}
+
+interface Props { digest: CollectionEntry<'digests'>; }
+const { digest } = Astro.props;
+
+const allArticles = await getCollection('articles');
+const articles = [...digest.data.aiSlugs, ...digest.data.dentistrySlugs]
+  .map((s) => allArticles.find((a) => a.slug === s))
+  .filter((a): a is NonNullable<typeof a> => a !== undefined);
+
+const hero = articles.find((a) => a.slug === digest.data.heroSlug) ?? articles[0];
+const rest = articles.filter((a) => a.slug !== hero?.slug);
+---
+
+<BaseLayout title={`Almanac — ${formatDate(digest.data.date)}`} description={digest.data.intro}>
+  <div class="container">
+    <p class="kicker">Edition · {formatDate(digest.data.date)}</p>
+    {hero && <HeroStory article={hero} />}
+    <p class="archive-day__intro">{digest.data.intro}</p>
+    <ArticleGrid articles={rest} />
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-day__intro {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: var(--lh-snug);
+    color: var(--color-text-muted);
+    max-width: 60ch;
+    margin: 0 0 var(--space-7);
+    font-style: italic;
+  }
+</style>

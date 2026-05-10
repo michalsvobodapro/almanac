@@ -1,0 +1,86 @@
+# Almanac — source feeds. Single source of truth. Pipeline reads this; /sources page reads data/source-status.json (which the pipeline writes).
+#
+# Required per source: id, name, url, section, language, type
+# Optional:           trust (1-5), tags, fetchEvery (hours), maxItems (cap per fetch)
+
+defaults:
+  fetchEvery: 24
+  userAgent: "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
+  timeoutMs: 15000
+  maxItems: 30
+
+sources:
+  # ── AI ─────────────────────────────────────────────────────────────────
+  - id: anthropic-news
+    name: "Anthropic News"
+    url: "https://www.anthropic.com/news/rss.xml"
+    section: ai
+    language: en
+    type: rss
+    trust: 5
+    tags: [frontier-lab, claude]
+
+  - id: import-ai
+    name: "Import AI"
+    url: "https://importai.substack.com/feed"
+    section: ai
+    language: en
+    type: rss
+    trust: 4
+    tags: [newsletter, policy]
+
+  - id: simonw
+    name: "Simon Willison's Weblog"
+    url: "https://simonwillison.net/atom/everything/"
+    section: ai
+    language: en
+    type: rss
+    trust: 4
+    tags: [blog, developer-tooling]
+
+  - id: hf-papers
+    name: "Hugging Face Daily Papers"
+    url: "https://jamesg.blog/hf-papers.xml"
+    section: ai
+    language: en
+    type: rss
+    trust: 3
+    tags: [research, papers]
+
+  # ── Dentistry ─────────────────────────────────────────────────────────
+  - id: pubmed-caries-ai
+    name: "PubMed — Dental AI"
+    # Replace ID with real saved-search RSS once tuned:
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+AI/?limit=20"
+    section: dentistry
+    language: en
+    type: rss
+    trust: 4
+    tags: [research, ai-in-dentistry]
+
+  - id: jada
+    name: "JADA"
+    url: "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada"
+    section: dentistry
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed]
+
+  - id: dental-tribune
+    name: "Dental Tribune"
+    url: "https://www.dental-tribune.com/feed/"
+    section: dentistry
+    language: en
+    type: rss
+    trust: 3
+    tags: [news, trade]
+
+  - id: efp
+    name: "EFP — European Federation of Periodontology"
+    url: "https://www.efp.org/news-events/news/feed/"
+    section: dentistry
+    language: en
+    type: rss
+    trust: 5
+    tags: [periodontology, guidelines]

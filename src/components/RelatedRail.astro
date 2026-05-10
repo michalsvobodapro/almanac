@@ -1,0 +1,39 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { articles: CollectionEntry<'articles'>[]; }
+const { articles } = Astro.props;
+---
+
+{articles.length > 0 && (
+  <section class="related">
+    <h2 class="related__title">Related</h2>
+    <div class="related__grid">
+      {articles.map((a) => <ArticleCard article={a} />)}
+    </div>
+  </section>
+)}
+
+<style>
+  .related {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-rule);
+  }
+  .related__title {
+    font-size: var(--fs-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-5);
+    font-weight: 600;
+  }
+  .related__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  @media (max-width: 960px) { .related__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .related__grid { grid-template-columns: 1fr; } }
+</style>
