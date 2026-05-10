@@ -39,6 +39,14 @@ Items are from the last 24 hours.
 Pick the 10 best stories. Aim for breadth across the dental specialties; do
 not let one specialty dominate unless the day genuinely warrants it.
 
+For each pick you write TWO summaries:
+- `summary`: 2–3 sentences, ~50–80 words. The card-and-feed version. Sharp,
+  declarative.
+- `summaryDeep`: 4–7 sentences, ~150–200 words. The article-page version.
+  Synthesizes the abstract and excerpt: what was studied, what was found,
+  what it changes for clinical practice. Still your editorial voice — not a
+  press release.
+
 For each pick, classify it into ONE category:
   - conservative   (caries, restorative materials, operative, esthetic)
   - endodontics    (pulp, root canal, instrumentation, retreatment)
@@ -96,10 +104,11 @@ SUBMIT_TOOL = {
                         "category": {"type": "string", "enum": list(CATEGORIES)},
                         "title": {"type": "string"},
                         "summary": {"type": "string"},
+                        "summaryDeep": {"type": "string"},
                         "tags": {"type": "array", "items": {"type": "string"}, "maxItems": 4},
                         "relatedIds": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
                     },
-                    "required": ["id", "rank", "category", "title", "summary"],
+                    "required": ["id", "rank", "category", "title", "summary", "summaryDeep"],
                 },
             },
         },
@@ -129,7 +138,9 @@ def _items_payload(today: str, items: list[RawItem]) -> str:
             {
                 "id": f"{i.source_id}::{i.url}",
                 "title": i.title,
-                "excerpt": (i.excerpt or "")[:280],
+                # Prefer the longer enriched excerpt when available so Claude
+                # can write a real `summaryDeep`, not a stretched headline.
+                "excerpt": (i.excerpt_full or i.excerpt or "")[:1500],
                 "sourceName": i.source_name,
                 "language": i.language,
                 "publishedAt": (i.published_at.isoformat() if i.published_at else ""),
@@ -227,6 +238,7 @@ def _normalize_item(item: dict[str, Any]) -> dict[str, Any]:
         "category": item["category"],
         "title": item["title"],
         "summary": item["summary"],
+        "summary_deep": item.get("summaryDeep"),
         "tags": item.get("tags", []),
         "related_ids": item.get("relatedIds", []),
     }
