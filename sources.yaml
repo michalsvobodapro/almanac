@@ -1,7 +1,16 @@
-# Almanac — source feeds. Single source of truth. Pipeline reads this; /sources page reads data/source-status.json (which the pipeline writes).
+# Almanac — source feeds. Single source of truth. Pipeline reads this; /sources
+# page reads data/source-status.json (which the pipeline writes after each run).
 #
-# Required per source: id, name, url, section, language, type
-# Optional:           trust (1-5), tags, fetchEvery (hours), maxItems (cap per fetch)
+# Required per source: id, name, url, language, type
+# Optional:           trust (1-5), tags, fetchEvery (hours), maxItems,
+#                     primaryCategory (one of: conservative, endodontics,
+#                     periodontology, implantology, orthodontics, other)
+#
+# `primaryCategory` is just a hint for the /sources page UI. Claude classifies
+# each *item* into a category at digest time, not by source-level mapping.
+#
+# NOTE (v1.1 work): several feed URLs below are best-guesses from the relevant
+# publishers' homepages. Verify each one returns valid RSS before relying on it.
 
 defaults:
   fetchEvery: 24
@@ -10,77 +19,102 @@ defaults:
   maxItems: 30
 
 sources:
-  # ── AI ─────────────────────────────────────────────────────────────────
-  - id: anthropic-news
-    name: "Anthropic News"
-    url: "https://www.anthropic.com/news/rss.xml"
-    section: ai
-    language: en
+  # ── Czech ──────────────────────────────────────────────────────────────
+  - id: csk-news
+    name: "Česká stomatologická komora"
+    url: "https://www.dent.cz/rss/aktuality.xml"
+    language: cs
     type: rss
     trust: 5
-    tags: [frontier-lab, claude]
+    primaryCategory: other
+    tags: [czech, regulatory]
 
-  - id: import-ai
-    name: "Import AI"
-    url: "https://importai.substack.com/feed"
-    section: ai
+  - id: lks
+    name: "LKS — časopis ČSK"
+    url: "https://www.dent.cz/lks/rss"
+    language: cs
+    type: rss
+    trust: 4
+    primaryCategory: other
+    tags: [czech, journal]
+
+  # ── PubMed (per-specialty saved searches) ──────────────────────────────
+  # Replace IDs in URL once real saved-search RSS feeds are created on PubMed.
+  - id: pubmed-conservative
+    name: "PubMed — Conservative dentistry"
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/conservative+dentistry/?limit=20"
     language: en
     type: rss
     trust: 4
-    tags: [newsletter, policy]
+    primaryCategory: conservative
+    tags: [research, pubmed]
 
-  - id: simonw
-    name: "Simon Willison's Weblog"
-    url: "https://simonwillison.net/atom/everything/"
-    section: ai
+  - id: pubmed-endodontics
+    name: "PubMed — Endodontics"
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/endodontics/?limit=20"
     language: en
     type: rss
     trust: 4
-    tags: [blog, developer-tooling]
+    primaryCategory: endodontics
+    tags: [research, pubmed]
 
-  - id: hf-papers
-    name: "Hugging Face Daily Papers"
-    url: "https://jamesg.blog/hf-papers.xml"
-    section: ai
-    language: en
-    type: rss
-    trust: 3
-    tags: [research, papers]
-
-  # ── Dentistry ─────────────────────────────────────────────────────────
-  - id: pubmed-caries-ai
-    name: "PubMed — Dental AI"
-    # Replace ID with real saved-search RSS once tuned:
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+AI/?limit=20"
-    section: dentistry
+  - id: pubmed-periodontology
+    name: "PubMed — Periodontology"
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/periodontitis+OR+periodontology/?limit=20"
     language: en
     type: rss
     trust: 4
-    tags: [research, ai-in-dentistry]
+    primaryCategory: periodontology
+    tags: [research, pubmed]
 
+  - id: pubmed-implantology
+    name: "PubMed — Implantology"
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+implant/?limit=20"
+    language: en
+    type: rss
+    trust: 4
+    primaryCategory: implantology
+    tags: [research, pubmed]
+
+  - id: pubmed-orthodontics
+    name: "PubMed — Orthodontics"
+    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/orthodontics/?limit=20"
+    language: en
+    type: rss
+    trust: 4
+    primaryCategory: orthodontics
+    tags: [research, pubmed]
+
+  # ── Specialty journals & associations ──────────────────────────────────
   - id: jada
-    name: "JADA"
+    name: "JADA — Journal of the American Dental Association"
     url: "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada"
-    section: dentistry
     language: en
     type: rss
     trust: 5
     tags: [journal, peer-reviewed]
 
-  - id: dental-tribune
-    name: "Dental Tribune"
-    url: "https://www.dental-tribune.com/feed/"
-    section: dentistry
+  - id: bdj
+    name: "British Dental Journal"
+    url: "https://www.nature.com/bdj.rss"
     language: en
     type: rss
-    trust: 3
-    tags: [news, trade]
+    trust: 5
+    tags: [journal, peer-reviewed]
 
   - id: efp
     name: "EFP — European Federation of Periodontology"
     url: "https://www.efp.org/news-events/news/feed/"
-    section: dentistry
     language: en
     type: rss
     trust: 5
-    tags: [periodontology, guidelines]
+    primaryCategory: periodontology
+    tags: [association, guidelines]
+
+  - id: dental-tribune
+    name: "Dental Tribune"
+    url: "https://www.dental-tribune.com/feed/"
+    language: en
+    type: rss
+    trust: 3
+    tags: [news, trade]

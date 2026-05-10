@@ -4,12 +4,11 @@ from dedupe import canonical_url, dedupe
 from models import RawItem
 
 
-def _item(source_id: str, url: str, title: str, section: str = "ai") -> RawItem:
+def _item(source_id: str, url: str, title: str) -> RawItem:
     now = datetime.now(timezone.utc)
     return RawItem(
         source_id=source_id,
         source_name=source_id,
-        section=section,  # type: ignore[arg-type]
         language="en",
         title=title,
         url=url,
@@ -44,30 +43,22 @@ class TestDedupe:
         ]
         out = dedupe(items, trust_lookup={"a": 5, "b": 1})
         assert len(out) == 1
-        assert out[0].source_id == "a"  # higher trust kept
+        assert out[0].source_id == "a"
 
-    def test_title_similarity_within_section(self):
+    def test_title_similarity(self):
         items = [
-            _item("a", "https://a.com/1", "Anthropic ships Claude Opus 5", "ai"),
-            _item("b", "https://b.com/2", "Anthropic releases Claude Opus 5 model", "ai"),
+            _item("a", "https://a.com/1", "Single-cone obturation matches warm vertical compaction"),
+            _item("b", "https://b.com/2", "Single cone obturation matches warm vertical compaction technique"),
         ]
         out = dedupe(items, trust_lookup={"a": 3, "b": 5})
         assert len(out) == 1
         assert out[0].source_id == "b"
 
-    def test_title_similarity_does_not_cross_sections(self):
-        items = [
-            _item("a", "https://a.com/1", "Same title", "ai"),
-            _item("b", "https://b.com/2", "Same title", "dentistry"),
-        ]
-        out = dedupe(items)
-        assert len(out) == 2
-
     def test_preserves_distinct_items(self):
         items = [
-            _item("a", "https://a.com/1", "Story one"),
-            _item("b", "https://b.com/2", "Story two — completely different"),
-            _item("c", "https://c.com/3", "Yet another headline"),
+            _item("a", "https://a.com/1", "Bulk-fill composites match incremental on six-year wear"),
+            _item("b", "https://b.com/2", "Zygomatic implants reach 96% survival at ten years"),
+            _item("c", "https://c.com/3", "EFP downgrades regenerative surgery in stage IV perio"),
         ]
         out = dedupe(items)
         assert len(out) == 3

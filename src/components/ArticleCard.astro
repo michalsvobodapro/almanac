@@ -1,5 +1,5 @@
 ---
-import SectionBadge from './SectionBadge.astro';
+import CategoryBadge from './CategoryBadge.astro';
 import SourceBadge from './SourceBadge.astro';
 import type { CollectionEntry } from 'astro:content';
 
@@ -13,10 +13,10 @@ const href = `${base}/articles/${article.slug}/`;
 <article
   class="article-card"
   data-source-id={data.sourceId}
-  data-section={data.section}
+  data-category={data.category}
 >
   <div class="article-card__head">
-    <SectionBadge section={data.section} />
+    <CategoryBadge category={data.category} />
   </div>
   <h3 class="article-card__title">
     <a href={href}>{data.title}</a>

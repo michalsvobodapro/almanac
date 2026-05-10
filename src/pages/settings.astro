@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { CATEGORIES, CATEGORY_LABELS } from '../content/config';
 import sourceStatusData from '../../data/source-status.json';
 
-interface SourceStatus { id: string; name: string; section: 'ai' | 'dentistry'; }
+interface SourceStatus { id: string; name: string; }
 const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? [])
   .slice()
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -27,32 +28,33 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
 
     <section class="settings-section">
       <h2>Default landing page</h2>
-      <p class="settings-help">When you visit the site, jump straight to your preferred section.</p>
+      <p class="settings-help">When you visit the site, jump straight to a specialty.</p>
       <div class="settings-row" data-setting="landing">
         <label><input type="radio" name="landing" value="home" /> Home</label>
-        <label><input type="radio" name="landing" value="ai" /> AI</label>
-        <label><input type="radio" name="landing" value="dentistry" /> Dentistry</label>
+        {CATEGORIES.map((c) => (
+          <label><input type="radio" name="landing" value={c} /> {CATEGORY_LABELS[c]}</label>
+        ))}
       </div>
     </section>
 
     <section class="settings-section">
-      <h2>Sections</h2>
-      <p class="settings-help">Hide a whole section across the site.</p>
-      <div class="settings-row" data-setting="hidden-sections">
-        <label><input type="checkbox" name="section" value="ai" /> Hide AI</label>
-        <label><input type="checkbox" name="section" value="dentistry" /> Hide Dentistry</label>
+      <h2>Categories</h2>
+      <p class="settings-help">Hide a whole specialty across the site.</p>
+      <div class="settings-row" data-setting="hidden-categories">
+        {CATEGORIES.map((c) => (
+          <label><input type="checkbox" name="category" value={c} /> Hide {CATEGORY_LABELS[c]}</label>
+        ))}
       </div>
     </section>
 
     <section class="settings-section">
       <h2>Sources</h2>
-      <p class="settings-help">Hide individual sources from cards and grids. (Items still show on /sources for transparency.)</p>
+      <p class="settings-help">Hide individual sources from cards and grids. (They still show on /sources for transparency.)</p>
       <div class="settings-sources" data-setting="hidden-sources">
         {sources.map((s) => (
           <label class="settings-source">
             <input type="checkbox" name="source" value={s.id} />
             <span>{s.name}</span>
-            <span class="settings-source__section">{s.section}</span>
           </label>
         ))}
       </div>
@@ -76,18 +78,27 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     theme: 'almanac.theme',
     landing: 'almanac.landing',
     hiddenSources: 'almanac.hiddenSources',
-    hiddenSections: 'almanac.hiddenSections',
+    hiddenCategories: 'almanac.hiddenCategories',
     compact: 'almanac.compactCards',
   };
 
-  function applyHiddenSources(list: string[]) {
-    if (list.length) document.documentElement.dataset.hiddenSources = list.join(' ');
-    else delete document.documentElement.dataset.hiddenSources;
+  function rebuildHideRules() {
+    const sources = (localStorage.getItem(KEYS.hiddenSources) ?? '').split(' ').filter(Boolean);
+    const cats = (localStorage.getItem(KEYS.hiddenCategories) ?? '').split(' ').filter(Boolean);
+    const parts: string[] = [];
+    sources.forEach((id) => parts.push(`[data-source-id="${id.replace(/"/g, '\\"')}"]{display:none!important}`));
+    cats.forEach((c) => parts.push(`[data-category="${c.replace(/"/g, '\\"')}"]{display:none!important}`));
+    let tag = document.getElementById('almanac-hide-rules') as HTMLStyleElement | null;
+    if (!parts.length) { if (tag) tag.remove(); return; }
+    if (!tag) {
+      tag = document.createElement('style');
+      tag.id = 'almanac-hide-rules';
+      document.head.appendChild(tag);
+    }
+    tag.textContent = parts.join('');
   }
-  function applyHiddenSections(list: string[]) {
-    if (list.length) document.documentElement.dataset.hiddenSections = list.join(' ');
-    else delete document.documentElement.dataset.hiddenSections;
-  }
+  const applyHiddenSources = (_: string[]) => rebuildHideRules();
+  const applyHiddenCategories = (_: string[]) => rebuildHideRules();
   function applyCompact(on: boolean) {
     document.documentElement.classList.toggle('compact', on);
   }
@@ -96,7 +107,6 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     else delete document.documentElement.dataset.theme;
   }
 
-  // ── Init UI from storage ─────────────────────────────────────────────
   const theme = localStorage.getItem(KEYS.theme) ?? 'system';
   document.querySelectorAll<HTMLInputElement>('[data-setting="theme"] input').forEach((el) => {
     el.checked = el.value === theme;
@@ -112,16 +122,15 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     el.checked = hiddenSources.includes(el.value);
   });
 
-  const hiddenSections = (localStorage.getItem(KEYS.hiddenSections) ?? '').split(' ').filter(Boolean);
-  document.querySelectorAll<HTMLInputElement>('[data-setting="hidden-sections"] input[name="section"]').forEach((el) => {
-    el.checked = hiddenSections.includes(el.value);
+  const hiddenCategories = (localStorage.getItem(KEYS.hiddenCategories) ?? '').split(' ').filter(Boolean);
+  document.querySelectorAll<HTMLInputElement>('[data-setting="hidden-categories"] input[name="category"]').forEach((el) => {
+    el.checked = hiddenCategories.includes(el.value);
   });
 
   const compact = localStorage.getItem(KEYS.compact) === '1';
   const compactInput = document.querySelector<HTMLInputElement>('[data-setting="compact"] input[name="compact"]');
   if (compactInput) compactInput.checked = compact;
 
-  // ── Wire change handlers ─────────────────────────────────────────────
   document.querySelectorAll<HTMLInputElement>('[data-setting="theme"] input').forEach((el) => {
     el.addEventListener('change', () => {
       if (el.value === 'system') localStorage.removeItem(KEYS.theme);
@@ -147,13 +156,13 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     });
   });
 
-  document.querySelectorAll<HTMLInputElement>('[data-setting="hidden-sections"] input[name="section"]').forEach((el) => {
+  document.querySelectorAll<HTMLInputElement>('[data-setting="hidden-categories"] input[name="category"]').forEach((el) => {
     el.addEventListener('change', () => {
-      const cur = (localStorage.getItem(KEYS.hiddenSections) ?? '').split(' ').filter(Boolean);
+      const cur = (localStorage.getItem(KEYS.hiddenCategories) ?? '').split(' ').filter(Boolean);
       const next = el.checked ? [...new Set([...cur, el.value])] : cur.filter((v) => v !== el.value);
-      if (next.length) localStorage.setItem(KEYS.hiddenSections, next.join(' '));
-      else localStorage.removeItem(KEYS.hiddenSections);
-      applyHiddenSections(next);
+      if (next.length) localStorage.setItem(KEYS.hiddenCategories, next.join(' '));
+      else localStorage.removeItem(KEYS.hiddenCategories);
+      applyHiddenCategories(next);
     });
   });
 
@@ -194,7 +203,7 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
   .settings-row {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: var(--space-3) var(--space-4);
   }
   .settings-row label {
     display: inline-flex;
@@ -213,18 +222,12 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
   @media (max-width: 640px) { .settings-sources { grid-template-columns: 1fr; } }
   .settings-source {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2);
     cursor: pointer;
     font-size: var(--fs-sm);
-  }
-  .settings-source__section {
-    font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-text-subtle);
   }
 
   .settings-section--reset { border-top: 1px solid var(--color-rule); }

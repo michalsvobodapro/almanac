@@ -33,7 +33,7 @@ def canonical_url(url: str) -> str:
         path,
         parts.params,
         urlencode(query),
-        "",  # no fragment
+        "",
     ))
 
 
@@ -47,7 +47,6 @@ def dedupe(
 
     trust_lookup = trust_lookup or {}
 
-    # Pass 1 — URL canonicalization.
     by_url: dict[str, RawItem] = {}
     for item in items:
         c = canonical_url(item.url)
@@ -55,13 +54,10 @@ def dedupe(
         if existing is None or _trust(item, trust_lookup) > _trust(existing, trust_lookup):
             by_url[c] = item
 
-    # Pass 2 — title fuzz within the same section.
     out: list[RawItem] = []
     for item in by_url.values():
         replaced = False
         for i, kept in enumerate(out):
-            if kept.section != item.section:
-                continue
             if fuzz.token_set_ratio(kept.title, item.title) >= title_threshold:
                 if _trust(item, trust_lookup) > _trust(kept, trust_lookup):
                     out[i] = item

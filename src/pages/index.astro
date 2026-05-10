@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroStory from '../components/HeroStory.astro';
 import ArticleGrid from '../components/ArticleGrid.astro';
@@ -9,12 +9,11 @@ import { formatDate } from '../lib/format';
 const allArticles = await getCollection('articles');
 const allDigests = await getCollection('digests');
 
-// Latest digest WITH content. Empty stubs (zero items) fall through to the
-// previous edition so the home never shows a blank page on a quiet day.
+// Latest digest with content. Empty stubs fall through.
 const latestDigest = allDigests
   .slice()
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
-  .find((d) => d.data.aiSlugs.length + d.data.dentistrySlugs.length > 0);
+  .find((d) => d.data.articleSlugs.length > 0);
 
 let hero: any = null;
 let rest: any[] = [];
@@ -23,16 +22,14 @@ if (latestDigest) {
   const heroSlug = latestDigest.data.heroSlug;
   hero = allArticles.find((a) => a.slug === heroSlug) ?? null;
 
-  const ordered = [...latestDigest.data.aiSlugs, ...latestDigest.data.dentistrySlugs]
+  rest = latestDigest.data.articleSlugs
     .filter((s) => s !== heroSlug)
     .map((s) => allArticles.find((a) => a.slug === s))
     .filter((a): a is NonNullable<typeof a> => a !== undefined);
-
-  rest = ordered;
 }
 
 const description = latestDigest
-  ? `Almanac for ${formatDate(latestDigest.data.date)} — ${rest.length + (hero ? 1 : 0)} hand-picked stories from AI and dentistry.`
+  ? `Almanac for ${formatDate(latestDigest.data.date)} — ${rest.length + (hero ? 1 : 0)} hand-picked dentistry stories.`
   : undefined;
 ---
 
@@ -60,10 +57,9 @@ const description = latestDigest
     font-family: var(--font-display);
     font-size: var(--fs-xl);
     line-height: var(--lh-snug);
-    color: var(--color-text);
+    color: var(--color-text-muted);
     max-width: 60ch;
     margin: 0 0 var(--space-7);
     font-style: italic;
-    color: var(--color-text-muted);
   }
 </style>

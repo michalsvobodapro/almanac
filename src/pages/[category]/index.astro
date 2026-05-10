@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { CATEGORIES, CATEGORY_LABELS, type Category } from '../../content/config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleGrid from '../../components/ArticleGrid.astro';
+import EmptyState from '../../components/EmptyState.astro';
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((category) => ({
+    params: { category },
+    props: { category },
+  }));
+}
+
+interface Props { category: Category; }
+const { category } = Astro.props;
+
+const articles = (await getCollection('articles', (a) => a.data.category === category))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const blurbs: Record<Category, string> = {
+  conservative: 'Restorative materials, caries detection, operative technique. The everyday chair work.',
+  endodontics: 'Pulp biology, instrumentation, obturation, retreatment. Where the canal meets the apex.',
+  periodontology: 'Perio classification, non-surgical and surgical therapy, regeneration, peri-implantitis.',
+  implantology: 'Implant systems, surgical protocols, peri-implant tissue, prosthetic complications.',
+  orthodontics: 'Aligners and fixed appliances, biomechanics, growth modification, retention.',
+  other: 'Oral surgery, prosthodontics, pediatric dentistry, oral medicine, regulation, education, business.',
+};
+---
+
+<BaseLayout title={CATEGORY_LABELS[category]} description={blurbs[category]}>
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Specialty</span>
+      <h1>{CATEGORY_LABELS[category]}</h1>
+      <p class="section-head__sub">{blurbs[category]}</p>
+    </header>
+    {articles.length > 0
+      ? <ArticleGrid articles={articles} />
+      : <EmptyState title={`No ${CATEGORY_LABELS[category].toLowerCase()} stories yet`} />
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: var(--space-7); }
+  .section-head h1 { margin: var(--space-2) 0; }
+  .section-head__sub {
+    font-size: var(--fs-md);
+    color: var(--color-text-muted);
+    max-width: 60ch;
+    margin: 0;
+  }
+</style>

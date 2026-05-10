@@ -8,7 +8,31 @@ from typing import Literal
 from pydantic import BaseModel, Field, HttpUrl
 
 
-Section = Literal["ai", "dentistry"]
+Category = Literal[
+    "conservative",
+    "endodontics",
+    "periodontology",
+    "implantology",
+    "orthodontics",
+    "other",
+]
+CATEGORIES: tuple[Category, ...] = (
+    "conservative",
+    "endodontics",
+    "periodontology",
+    "implantology",
+    "orthodontics",
+    "other",
+)
+CATEGORY_LABELS: dict[Category, str] = {
+    "conservative": "Conservative",
+    "endodontics": "Endodontics",
+    "periodontology": "Periodontology",
+    "implantology": "Implantology",
+    "orthodontics": "Orthodontics",
+    "other": "Other",
+}
+
 Lang = Literal["en", "cs"]
 
 
@@ -17,7 +41,6 @@ class RawItem(BaseModel):
 
     source_id: str
     source_name: str
-    section: Section
     language: Lang
     title: str
     url: str
@@ -32,7 +55,8 @@ class RankedItem(BaseModel):
     """One article as picked by Claude. Mirrors the tool-call response shape."""
 
     id: str
-    rank: int = Field(ge=1, le=10)
+    rank: int = Field(ge=1, le=20)
+    category: Category
     title: str
     summary: str
     tags: list[str] = Field(default_factory=list, max_length=4)
@@ -44,22 +68,18 @@ class DigestResponse(BaseModel):
 
     intro: str
     hero_id: str
-    ai: list[RankedItem] = Field(min_length=1, max_length=5)
-    dentistry: list[RankedItem] = Field(min_length=1, max_length=5)
+    items: list[RankedItem] = Field(min_length=1, max_length=12)
 
 
 class ArticleFrontmatter(BaseModel):
-    """Mirrors the Zod `articles` collection schema in src/content/config.ts.
-
-    The filename is the slug, so no `slug` field here (Astro reserves it).
-    """
+    """Mirrors the Zod `articles` collection schema in src/content/config.ts."""
 
     title: str
     originalTitle: str
     date: datetime
     digestDate: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    section: Section
-    rank: int = Field(ge=1, le=10)
+    category: Category
+    rank: int = Field(ge=1, le=20)
     summary: str
     summaryLang: Lang
     sourceId: str
@@ -88,8 +108,7 @@ class DigestFrontmatter(BaseModel):
     date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
     builtAt: datetime
     intro: str
-    aiSlugs: list[str]
-    dentistrySlugs: list[str]
+    articleSlugs: list[str]
     heroSlug: str
     stats: DigestStats
 
@@ -98,9 +117,9 @@ class SourceStatusEntry(BaseModel):
     id: str
     name: str
     url: str
-    section: Section
     language: Lang
     status: Literal["ok", "error", "never"]
+    primaryCategory: Category | None = None
     lastFetched: datetime | None = None
     itemsLastRun: int = 0
     errorMessage: str | None = None

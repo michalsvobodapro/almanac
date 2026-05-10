@@ -14,104 +14,96 @@ from typing import Any
 
 from anthropic import Anthropic
 
-from models import DigestResponse, RawItem
+from models import CATEGORIES, DigestResponse, RawItem
 
 
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 4096
 
-# Pricing per 1M tokens (Sonnet 4.6 baseline; update if model changes).
+# Pricing per 1M tokens (Sonnet 4.6 baseline).
 PRICE_INPUT_PER_M = 3.00
 PRICE_OUTPUT_PER_M = 15.00
 PRICE_CACHE_READ_PER_M = 0.30
 
 
 SYSTEM_PROMPT = """\
-You are the editor of Almanac, a daily editorial brief for one reader. Your voice
-is The Verge crossed with Stratechery: declarative, opinionated, unpadded. Never
-write "in this article" or "the author argues." Write as if introducing the story
-yourself.
+You are the editor of Almanac, a daily editorial brief on dentistry for one
+reader. Your voice is The Verge crossed with Stratechery: declarative,
+opinionated, unpadded. Never write "in this article" or "the author argues."
+Write as if introducing the story yourself.
 
-You will receive a JSON array of candidate news items, each with `id`, `section`
-("ai" or "dentistry"), `title`, `excerpt`, `sourceName`, `language` ("en" or "cs"),
-`publishedAt`, and `url`. Items are from the last 24 hours.
+You will receive a JSON array of candidate items, each with `id`, `title`,
+`excerpt`, `sourceName`, `language` ("en" or "cs"), `publishedAt`, and `url`.
+Items are from the last 24 hours.
 
-Pick the 5 best AI items and 5 best dentistry items. Rank within each section
-(1 = top). Write each summary in the same language as the source item (English
-for `en`, Czech for `cs`). Summaries are 2–3 sentences, ~50–80 words. No
-marketing fluff, no "researchers say" hedges. Lead with the development, then
-the so-what.
+Pick the 10 best stories. Aim for breadth across the dental specialties; do
+not let one specialty dominate unless the day genuinely warrants it.
+
+For each pick, classify it into ONE category:
+  - conservative   (caries, restorative materials, operative, esthetic)
+  - endodontics    (pulp, root canal, instrumentation, retreatment)
+  - periodontology (gums, perio classification, regeneration, peri-implantitis)
+  - implantology   (implants, surgical placement, prosthetic complications)
+  - orthodontics   (aligners, fixed appliances, biomechanics, retention)
+  - other          (oral surgery, prosthodontics, pediatric, oral medicine,
+                    regulation, education, business — anything not above)
+
+Rank 1..10 across the whole list (1 = top). Write each summary in the same
+language as the source item (English for `en`, Czech for `cs`). Summaries are
+2–3 sentences, ~50–80 words. No marketing fluff, no "researchers say" hedges.
+Lead with the development, then the so-what.
 
 You may rewrite titles to be sharper while preserving meaning and language.
 Tag each story with 2–4 freeform lowercase-hyphenated tags. For each item,
 list 0–3 `relatedIds` from your other selections.
 
 Also write a one-paragraph editorial `intro` (English, ~3 sentences) framing
-the day's themes and naming a `heroId` — the single most important story
-across both sections.
+the day's themes and naming a `heroId` — the single most important story.
 
 Return ONLY by calling the `submit_digest` tool.
 """
 
 USER_PROFILE = """\
-Reader profile: dentistry student in Prague who also writes code.
+Reader profile: dentistry student in Prague. Prioritize:
+- changes that affect chairside practice (materials, protocols, indications)
+- ČSK and EU regulatory news
+- new evidence (RCTs, meta-analyses, long-term cohorts) over single case reports
+- AI-in-dentistry research that translates to clinic
+- Czech-specific news and education
 
-Prioritize:
-- clinical practice changes (caries, perio, endo, implants)
-- regulatory news from ČSK / EU
-- frontier-lab capability releases (Anthropic, OpenAI, Google DeepMind)
-- AI-in-medicine research
-- developer-facing AI tooling
-
-De-prioritize:
-- AI hype/funding without product
-- dental marketing content
-- US insurance billing minutiae
+De-prioritize: marketing, influencer videos, US insurance billing, press
+releases that aren't backed by published evidence.
 """
 
 
 SUBMIT_TOOL = {
     "name": "submit_digest",
-    "description": "Submit the curated daily digest.",
+    "description": "Submit the curated daily dentistry digest.",
     "input_schema": {
         "type": "object",
         "properties": {
             "intro": {"type": "string"},
             "heroId": {"type": "string"},
-            "ai": {
+            "items": {
                 "type": "array",
-                "minItems": 1, "maxItems": 5,
+                "minItems": 1,
+                "maxItems": 12,
                 "items": {
                     "type": "object",
                     "properties": {
                         "id": {"type": "string"},
-                        "rank": {"type": "integer", "minimum": 1, "maximum": 5},
+                        "rank": {"type": "integer", "minimum": 1, "maximum": 20},
+                        "category": {"type": "string", "enum": list(CATEGORIES)},
                         "title": {"type": "string"},
                         "summary": {"type": "string"},
                         "tags": {"type": "array", "items": {"type": "string"}, "maxItems": 4},
                         "relatedIds": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
                     },
-                    "required": ["id", "rank", "title", "summary"],
-                },
-            },
-            "dentistry": {
-                "type": "array",
-                "minItems": 1, "maxItems": 5,
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "id": {"type": "string"},
-                        "rank": {"type": "integer", "minimum": 1, "maximum": 5},
-                        "title": {"type": "string"},
-                        "summary": {"type": "string"},
-                        "tags": {"type": "array", "items": {"type": "string"}, "maxItems": 4},
-                        "relatedIds": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
-                    },
-                    "required": ["id", "rank", "title", "summary"],
+                    "required": ["id", "rank", "category", "title", "summary"],
                 },
             },
         },
-        "required": ["intro", "heroId", "ai", "dentistry"],
+        "required": ["intro", "heroId", "items"],
     },
 }
 
@@ -136,7 +128,6 @@ def _items_payload(today: str, items: list[RawItem]) -> str:
         "items": [
             {
                 "id": f"{i.source_id}::{i.url}",
-                "section": i.section,
                 "title": i.title,
                 "excerpt": (i.excerpt or "")[:280],
                 "sourceName": i.source_name,
@@ -159,13 +150,11 @@ def _compute_cost(input_t: int, output_t: int, cached_t: int) -> float:
 
 
 def rank(today: str, items: list[RawItem]) -> RankResult:
-    """Make the call, validate, return RankResult. Raises on unrecoverable failure."""
-
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
     est_chars = _estimate_input_chars(items)
-    if est_chars > 240_000:  # ~60k tokens
+    if est_chars > 240_000:
         raise RuntimeError(
             f"Estimated input ~{est_chars // 4} tokens > 60k cap. Refusing call."
         )
@@ -209,8 +198,7 @@ def rank(today: str, items: list[RawItem]) -> RankResult:
             digest = DigestResponse.model_validate({
                 "intro": payload["intro"],
                 "hero_id": payload["heroId"],
-                "ai": [_normalize_item(x) for x in payload["ai"]],
-                "dentistry": [_normalize_item(x) for x in payload["dentistry"]],
+                "items": [_normalize_item(x) for x in payload["items"]],
             })
             usage = resp.usage
             input_t = getattr(usage, "input_tokens", 0)
@@ -236,6 +224,7 @@ def _normalize_item(item: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": item["id"],
         "rank": item["rank"],
+        "category": item["category"],
         "title": item["title"],
         "summary": item["summary"],
         "tags": item.get("tags", []),

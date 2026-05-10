@@ -1,26 +1,27 @@
 ---
 import LanguageChip from './LanguageChip.astro';
+import { CATEGORY_LABELS, type Category } from '../content/config';
 import { relativeTime } from '../lib/format';
 
 interface Props {
   id: string;
   name: string;
   url: string;
-  section: 'ai' | 'dentistry';
   language: 'en' | 'cs';
   status: 'ok' | 'error' | 'never';
+  primaryCategory?: Category;
   lastFetched?: string;
   itemsLastRun?: number;
   errorMessage?: string;
 }
-const { id, name, url, section, language, status, lastFetched, itemsLastRun, errorMessage } = Astro.props;
+const { id, name, url, language, status, primaryCategory, lastFetched, itemsLastRun, errorMessage } = Astro.props;
 ---
 
-<tr class="source-row" data-source-id={id} data-section={section}>
+<tr class="source-row" data-source-id={id}>
   <td>
     <a href={url} target="_blank" rel="noopener noreferrer" class="source-row__name">{name}</a>
     <div class="source-row__meta">
-      <span class="source-row__section">{section}</span>
+      {primaryCategory && <span class="source-row__cat">{CATEGORY_LABELS[primaryCategory]}</span>}
       <LanguageChip lang={language} />
     </div>
   </td>

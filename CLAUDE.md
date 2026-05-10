@@ -4,7 +4,7 @@ This file is read by Claude Code at the start of every session in this repo.
 
 ## What this is
 
-A static news portal aggregating AI + dentistry news, regenerated daily by a GitHub Actions cron at 04:00 UTC. See [README.md](./README.md) for the high-level pitch.
+A static news portal aggregating dentistry news across six specialties (conservative, endodontics, periodontology, implantology, orthodontics, other), regenerated daily by a GitHub Actions cron at 04:00 UTC. See [README.md](./README.md) for the high-level pitch.
 
 ## Stack
 
@@ -15,10 +15,11 @@ A static news portal aggregating AI + dentistry news, regenerated daily by a Git
 
 ## Conventions
 
-- **Schemas:** Truth lives in `src/content/config.ts` (Zod, Astro reads). Mirrored in `scripts/models.py` (Pydantic, pipeline writes). Update both together.
+- **Schemas:** Truth lives in `src/content/config.ts` (Zod, Astro reads). Mirrored in `scripts/models.py` (Pydantic, pipeline writes). Update both together. The `CATEGORIES` enum (`conservative | endodontics | periodontology | implantology | orthodontics | other`) is defined in both — keep in sync.
 - **Hydration:** Only `ThemeToggle`, `SourceFilter`, `LandingPicker` ship JS. Everything else is zero-JS Astro components.
 - **Settings:** Client-side only. localStorage keys prefixed `almanac.*`. No backend, no accounts.
 - **Languages:** Articles preserve source language (EN or CS). Site chrome (nav, footer, settings) is English.
+- **Categorization:** Sources don't map 1:1 to specialties — Claude classifies each *item* into a category at digest time. Sources may set `primaryCategory` in `sources.yaml` as a hint for the /sources page only.
 - **Design:** Editorial / magazine. Warm paper light + true editorial dark. Fraunces (display) + Inter (body), both self-hosted woff2. No Google Fonts at runtime. **Not** Alveodont's clinical blue.
 - **Cron drift:** Accepted. Cron is `0 4 * * *` UTC year-round.
 

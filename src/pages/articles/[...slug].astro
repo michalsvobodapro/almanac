@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import SectionBadge from '../../components/SectionBadge.astro';
+import CategoryBadge from '../../components/CategoryBadge.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import RelatedRail from '../../components/RelatedRail.astro';
 import DateLine from '../../components/DateLine.astro';
@@ -29,7 +29,7 @@ const related = data.relatedSlugs
   <article class="container container--narrow">
     <header class="article-page__head">
       <div class="article-page__meta">
-        <SectionBadge section={data.section} />
+        <CategoryBadge category={data.category} />
         <DateLine date={data.date} />
       </div>
       <h1 class="article-page__title">{data.title}</h1>

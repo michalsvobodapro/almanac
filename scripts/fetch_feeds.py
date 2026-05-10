@@ -7,6 +7,7 @@ failures is data/source-status.json (rendered on /sources page).
 from __future__ import annotations
 
 import json
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,7 +18,7 @@ import httpx
 import yaml
 from dateutil import parser as dtparser
 
-from models import Lang, RawItem, Section, SourceStatusEntry
+from models import Category, Lang, RawItem, SourceStatusEntry
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -68,10 +69,7 @@ def _excerpt(entry: Any, limit: int = 280) -> str:
         if isinstance(v, list) and v:
             v = v[0].get("value")
         if isinstance(v, str) and v.strip():
-            text = feedparser.api._sanitize_html(v, "utf-8", "text/html") if False else v
-            # Strip HTML tags crudely; we only need a flavor for ranking.
-            import re
-            text = re.sub(r"<[^>]+>", "", text)
+            text = re.sub(r"<[^>]+>", "", v)
             text = re.sub(r"\s+", " ", text).strip()
             return text[:limit]
     return ""
@@ -87,9 +85,9 @@ def fetch_one(
 ) -> tuple[list[RawItem], SourceStatusEntry]:
     sid: str = source["id"]
     url: str = source["url"]
-    section: Section = source["section"]
     language: Lang = source["language"]
     name: str = source["name"]
+    primary_cat: Category | None = source.get("primaryCategory")
     max_items: int = int(source.get("maxItems", defaults.get("maxItems", 30)))
 
     headers = {"User-Agent": defaults.get("userAgent", "almanac-bot/1.0")}
@@ -102,34 +100,32 @@ def fetch_one(
     now = utcnow()
 
     try:
-        if sid.startswith("arxiv-"):
-            time.sleep(3.5)  # arXiv asks ≤1 req/3s
+        if sid.startswith("arxiv-") or sid.startswith("pubmed-"):
+            time.sleep(3.5)  # NCBI / arXiv ask for ≤1 req/3s
         resp = client.get(url, headers=headers, timeout=defaults.get("timeoutMs", 15000) / 1000)
     except Exception as exc:
         status = SourceStatusEntry(
-            id=sid, name=name, url=url, section=section, language=language,
+            id=sid, name=name, url=url, language=language, primaryCategory=primary_cat,
             status="error", errorMessage=f"{type(exc).__name__}: {exc}",
             lastFetched=now, itemsLastRun=0,
         )
         return [], status
 
     if resp.status_code == 304:
-        # Not modified — trust the cache, claim 0 fresh items.
         status = SourceStatusEntry(
-            id=sid, name=name, url=url, section=section, language=language,
+            id=sid, name=name, url=url, language=language, primaryCategory=primary_cat,
             status="ok", lastFetched=now, itemsLastRun=0,
         )
         return [], status
 
     if resp.status_code >= 400:
         status = SourceStatusEntry(
-            id=sid, name=name, url=url, section=section, language=language,
+            id=sid, name=name, url=url, language=language, primaryCategory=primary_cat,
             status="error", errorMessage=f"HTTP {resp.status_code}",
             lastFetched=now, itemsLastRun=0,
         )
         return [], status
 
-    # Update ETag cache
     new_cache: dict[str, str] = {}
     if et := resp.headers.get("etag"):
         new_cache["etag"] = et
@@ -158,7 +154,6 @@ def fetch_one(
         items.append(RawItem(
             source_id=sid,
             source_name=name,
-            section=section,
             language=language,
             title=str(entry.get("title", "")).strip(),
             url=link,
@@ -170,7 +165,7 @@ def fetch_one(
         ))
 
     status = SourceStatusEntry(
-        id=sid, name=name, url=url, section=section, language=language,
+        id=sid, name=name, url=url, language=language, primaryCategory=primary_cat,
         status="ok", lastFetched=now, itemsLastRun=len(items),
     )
     return items, status
@@ -194,7 +189,7 @@ def fetch_all() -> tuple[list[RawItem], list[SourceStatusEntry]]:
             except Exception as exc:
                 status = SourceStatusEntry(
                     id=source["id"], name=source["name"], url=source["url"],
-                    section=source["section"], language=source["language"],
+                    language=source["language"], primaryCategory=source.get("primaryCategory"),
                     status="error", errorMessage=f"unhandled: {type(exc).__name__}: {exc}",
                     lastFetched=utcnow(), itemsLastRun=0,
                 )
