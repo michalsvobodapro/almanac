@@ -1,68 +1,108 @@
 {
-  "lastRunAt": "2026-05-10T05:03:12.943945+00:00",
+  "lastRunAt": "2026-05-10T05:22:55.989316+00:00",
   "sources": [
     {
-      "id": "anthropic-news",
-      "name": "Anthropic News",
-      "url": "https://www.anthropic.com/news/rss.xml",
-      "section": "ai",
+      "id": "csk-news",
+      "name": "\u010cesk\u00e1 stomatologick\u00e1 komora",
+      "url": "https://www.dent.cz/rss/aktuality.xml",
+      "language": "cs",
+      "status": "ok",
+      "primaryCategory": "other",
+      "lastFetched": "2026-05-10T05:22:35.686723Z",
+      "itemsLastRun": 0
+    },
+    {
+      "id": "lks",
+      "name": "LKS \u2014 \u010dasopis \u010cSK",
+      "url": "https://www.dent.cz/lks/rss",
+      "language": "cs",
+      "status": "ok",
+      "primaryCategory": "other",
+      "lastFetched": "2026-05-10T05:22:35.778806Z",
+      "itemsLastRun": 0
+    },
+    {
+      "id": "pubmed-conservative",
+      "name": "PubMed \u2014 Conservative dentistry",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/conservative+dentistry/?limit=20",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:03:05.651264Z",
+      "primaryCategory": "conservative",
+      "lastFetched": "2026-05-10T05:22:35.837858Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "pubmed-endodontics",
+      "name": "PubMed \u2014 Endodontics",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/endodontics/?limit=20",
+      "language": "en",
+      "status": "error",
+      "primaryCategory": "endodontics",
+      "lastFetched": "2026-05-10T05:22:39.598587Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "pubmed-periodontology",
+      "name": "PubMed \u2014 Periodontology",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/periodontitis+OR+periodontology/?limit=20",
+      "language": "en",
+      "status": "error",
+      "primaryCategory": "periodontology",
+      "lastFetched": "2026-05-10T05:22:43.345520Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "pubmed-implantology",
+      "name": "PubMed \u2014 Implantology",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+implant/?limit=20",
+      "language": "en",
+      "status": "error",
+      "primaryCategory": "implantology",
+      "lastFetched": "2026-05-10T05:22:47.078015Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "pubmed-orthodontics",
+      "name": "PubMed \u2014 Orthodontics",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/orthodontics/?limit=20",
+      "language": "en",
+      "status": "error",
+      "primaryCategory": "orthodontics",
+      "lastFetched": "2026-05-10T05:22:50.857238Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 500"
+    },
+    {
+      "id": "jada",
+      "name": "JADA \u2014 Journal of the American Dental Association",
+      "url": "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada",
+      "language": "en",
+      "status": "error",
+      "lastFetched": "2026-05-10T05:22:54.550148Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
     {
-      "id": "import-ai",
-      "name": "Import AI",
-      "url": "https://importai.substack.com/feed",
-      "section": "ai",
-      "language": "en",
-      "status": "error",
-      "lastFetched": "2026-05-10T05:03:10.527773Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "simonw",
-      "name": "Simon Willison's Weblog",
-      "url": "https://simonwillison.net/atom/everything/",
-      "section": "ai",
+      "id": "bdj",
+      "name": "British Dental Journal",
+      "url": "https://www.nature.com/bdj.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-10T05:03:10.549968Z",
-      "itemsLastRun": 0
+      "lastFetched": "2026-05-10T05:22:55.328874Z",
+      "itemsLastRun": 8
     },
     {
-      "id": "hf-papers",
-      "name": "Hugging Face Daily Papers",
-      "url": "https://jamesg.blog/hf-papers.xml",
-      "section": "ai",
+      "id": "efp",
+      "name": "EFP \u2014 European Federation of Periodontology",
+      "url": "https://www.efp.org/news-events/news/feed/",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-10T05:03:10.656571Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 502"
-    },
-    {
-      "id": "pubmed-caries-ai",
-      "name": "PubMed \u2014 Dental AI",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+AI/?limit=20",
-      "section": "dentistry",
-      "language": "en",
-      "status": "error",
-      "lastFetched": "2026-05-10T05:03:11.264394Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "jada",
-      "name": "JADA",
-      "url": "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada",
-      "section": "dentistry",
-      "language": "en",
-      "status": "error",
-      "lastFetched": "2026-05-10T05:03:11.387346Z",
+      "primaryCategory": "periodontology",
+      "lastFetched": "2026-05-10T05:22:55.422830Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -70,22 +110,10 @@
       "id": "dental-tribune",
       "name": "Dental Tribune",
       "url": "https://www.dental-tribune.com/feed/",
-      "section": "dentistry",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-10T05:03:11.792312Z",
+      "lastFetched": "2026-05-10T05:22:55.822767Z",
       "itemsLastRun": 0
-    },
-    {
-      "id": "efp",
-      "name": "EFP \u2014 European Federation of Periodontology",
-      "url": "https://www.efp.org/news-events/news/feed/",
-      "section": "dentistry",
-      "language": "en",
-      "status": "error",
-      "lastFetched": "2026-05-10T05:03:12.173486Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 404"
     }
   ]
 }

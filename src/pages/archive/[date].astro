@@ -17,7 +17,7 @@ interface Props { digest: CollectionEntry<'digests'>; }
 const { digest } = Astro.props;
 
 const allArticles = await getCollection('articles');
-const articles = [...digest.data.aiSlugs, ...digest.data.dentistrySlugs]
+const articles = digest.data.articleSlugs
   .map((s) => allArticles.find((a) => a.slug === s))
   .filter((a): a is NonNullable<typeof a> => a !== undefined);
 

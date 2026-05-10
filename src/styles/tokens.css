@@ -58,8 +58,13 @@
   --color-accent:       #b91c1c;
   --color-accent-hover: #991b1b;
 
-  --color-section-ai:        #6b21a8;
-  --color-section-dentistry: #0f766e;
+  /* Category accents (used by CategoryBadge only — restrained palette) */
+  --color-cat-conservative:  #b45309;  /* amber */
+  --color-cat-endodontics:   #c2410c;  /* burnt orange */
+  --color-cat-periodontology:#be185d;  /* magenta */
+  --color-cat-implantology:  #1d4ed8;  /* deep blue */
+  --color-cat-orthodontics:  #15803d;  /* green */
+  --color-cat-other:         #475569;  /* slate */
 
   --color-success: #15803d;
   --color-error:   #b91c1c;
@@ -90,8 +95,12 @@
   --color-accent:       #fb7185;
   --color-accent-hover: #fda4af;
 
-  --color-section-ai:        #c084fc;
-  --color-section-dentistry: #2dd4bf;
+  --color-cat-conservative:  #fbbf24;
+  --color-cat-endodontics:   #fb923c;
+  --color-cat-periodontology:#f472b6;
+  --color-cat-implantology:  #60a5fa;
+  --color-cat-orthodontics:  #4ade80;
+  --color-cat-other:         #94a3b8;
 
   --color-success: #4ade80;
   --color-error:   #fb7185;
@@ -120,8 +129,12 @@
     --color-accent:       #fb7185;
     --color-accent-hover: #fda4af;
 
-    --color-section-ai:        #c084fc;
-    --color-section-dentistry: #2dd4bf;
+    --color-cat-conservative:  #fbbf24;
+    --color-cat-endodontics:   #fb923c;
+    --color-cat-periodontology:#f472b6;
+    --color-cat-implantology:  #60a5fa;
+    --color-cat-orthodontics:  #4ade80;
+    --color-cat-other:         #94a3b8;
 
     --color-success: #4ade80;
     --color-error:   #fb7185;

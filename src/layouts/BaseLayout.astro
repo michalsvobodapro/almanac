@@ -40,33 +40,33 @@ const ogUrl = new URL(ogImage ?? `${import.meta.env.BASE_URL.replace(/\/$/, '')}
 
     <meta name="generator" content={Astro.generator} />
 
-    {/* Pre-paint theme bootstrap — prevents FOUC */}
-    <script is:inline>
+    {/* Pre-paint theme + hide-rules bootstrap — prevents FOUC */}
+    <script is:inline id="almanac-prefs">
       (function () {
         try {
           var t = localStorage.getItem('almanac.theme');
           if (t === 'light' || t === 'dark') {
             document.documentElement.dataset.theme = t;
           }
-          var hs = localStorage.getItem('almanac.hiddenSources');
-          if (hs) document.documentElement.dataset.hiddenSources = hs;
-          var hsec = localStorage.getItem('almanac.hiddenSections');
-          if (hsec) document.documentElement.dataset.hiddenSections = hsec;
           if (localStorage.getItem('almanac.compactCards') === '1') {
             document.documentElement.classList.add('compact');
+          }
+          var rules = [];
+          (localStorage.getItem('almanac.hiddenSources') || '').split(' ').filter(Boolean).forEach(function (id) {
+            rules.push('[data-source-id="' + id.replace(/"/g, '\\"') + '"]{display:none!important}');
+          });
+          (localStorage.getItem('almanac.hiddenCategories') || '').split(' ').filter(Boolean).forEach(function (c) {
+            rules.push('[data-category="' + c.replace(/"/g, '\\"') + '"]{display:none!important}');
+          });
+          if (rules.length) {
+            var style = document.createElement('style');
+            style.id = 'almanac-hide-rules';
+            style.textContent = rules.join('');
+            document.head.appendChild(style);
           }
         } catch (_) {}
       })();
     </script>
-
-    {/* Hide-source CSS — generated from data-hidden-sources attribute */}
-    <style is:inline>
-      [data-hidden-sources~="anthropic-news"] [data-source-id="anthropic-news"],
-      [data-hidden-sections~="ai"]            [data-section="ai"],
-      [data-hidden-sections~="dentistry"]     [data-section="dentistry"] {
-        display: none;
-      }
-    </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

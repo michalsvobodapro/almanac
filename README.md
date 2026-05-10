@@ -1,9 +1,9 @@
 # Almanac
 
-A daily curated brief covering **AI** and **Dentistry** news. Built for one reader; published openly.
+A daily curated brief on **dentistry**. Built for one reader; published openly.
 
-- **Live site:** `https://<gh-user>.github.io/almanac/` (set after first deploy)
-- **Schedule:** every day at 04:00 UTC (≈06:00 Prague summer / 05:00 winter — we accept the DST drift)
+- **Live site:** https://michalsvobodapro.github.io/almanac/
+- **Schedule:** every day at 04:00 UTC (≈06:00 Prague summer / 05:00 winter — DST drift accepted)
 - **Stack:** Astro (static site) + Python (digest pipeline) + Claude Sonnet 4.6 (curation & summaries)
 - **Hosting:** GitHub Pages, deployed by GitHub Actions
 
@@ -13,7 +13,7 @@ Every morning a GitHub Actions job:
 
 1. Fetches RSS/Atom feeds listed in [`sources.yaml`](./sources.yaml).
 2. Dedupes, filters to the last 24h, caps total volume.
-3. Sends candidates to Claude, which picks 5 AI + 5 dentistry stories, ranks them, and writes 2–3 sentence summaries in each story's original language (English or Czech).
+3. Sends candidates to Claude, which picks the 10 most worth-your-time stories, classifies each into a specialty (conservative, endodontics, periodontology, implantology, orthodontics, or other), and writes 2–3 sentence summaries in each story's original language (English or Czech).
 4. Writes one Markdown file per story to `src/content/articles/` and commits back.
 5. Builds the Astro site and deploys to GitHub Pages.
 

@@ -19,10 +19,10 @@ Build is being driven by harness task list. This file mirrors major milestones f
 
 ## v1.1 (after MVP ships)
 
-- [ ] Expand to ~30 sources
+- [ ] **Source URL curation** — most feed URLs in `sources.yaml` are best-guesses and 404/500. Verify each on the publisher site, replace with real RSS endpoints. PubMed needs real saved-search IDs (create on pubmed.ncbi.nlm.nih.gov, take the RSS link they generate).
+- [ ] Expand to ~20 sources (more journals: J. Endo, J. Perio, Clin. Oral Implants, EJO, J. Prosthet. Dent.)
 - [ ] OG image generation per article
-- [ ] Site-wide + per-section RSS feeds
-- [ ] Archive index + per-day pages (real, not stub)
+- [ ] Per-category RSS feeds (`/conservative/rss.xml` etc.)
 - [ ] Title-similarity dedupe v2
 
 ## v1.2+ (deferred)

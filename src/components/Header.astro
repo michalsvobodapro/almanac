@@ -5,11 +5,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname.replace(base, '') || '/';
 
 const nav = [
-  { href: '/',           label: 'Home' },
-  { href: '/ai/',        label: 'AI' },
-  { href: '/dentistry/', label: 'Dentistry' },
-  { href: '/archive/',   label: 'Archive' },
-  { href: '/sources/',   label: 'Sources' },
+  { href: '/',                 label: 'Home' },
+  { href: '/conservative/',    label: 'Conservative' },
+  { href: '/endodontics/',     label: 'Endo' },
+  { href: '/periodontology/',  label: 'Perio' },
+  { href: '/implantology/',    label: 'Implants' },
+  { href: '/orthodontics/',    label: 'Ortho' },
+  { href: '/other/',           label: 'Other' },
+  { href: '/archive/',         label: 'Archive' },
 ];
 
 function isActive(href: string) {
@@ -22,7 +25,7 @@ function isActive(href: string) {
   <div class="container site-header__inner">
     <a class="site-header__brand" href={`${base}/`}>
       <span class="site-header__wordmark">Almanac</span>
-      <span class="site-header__tag">AI &amp; Dentistry</span>
+      <span class="site-header__tag">Dentistry</span>
     </a>
     <nav class="site-header__nav" aria-label="Main">
       <ul role="list">
@@ -90,7 +93,7 @@ function isActive(href: string) {
 
   .site-header__nav ul {
     display: flex;
-    gap: var(--space-5);
+    gap: var(--space-4);
     justify-content: center;
     margin: 0;
     padding: 0;
@@ -107,6 +110,7 @@ function isActive(href: string) {
     padding-block: var(--space-2);
     border-bottom: 2px solid transparent;
     transition: color var(--transition-fast), border-color var(--transition-fast);
+    white-space: nowrap;
   }
 
   .site-header__nav a:hover { color: var(--color-text); }
@@ -138,7 +142,7 @@ function isActive(href: string) {
     background-color: var(--color-bg-subtle);
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 960px) {
     .site-header__inner {
       grid-template-columns: 1fr auto;
       grid-template-rows: auto auto;
@@ -151,7 +155,7 @@ function isActive(href: string) {
     .site-header__nav ul {
       justify-content: flex-start;
       flex-wrap: wrap;
-      gap: var(--space-4);
+      gap: var(--space-3) var(--space-4);
     }
   }
 </style>

@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ site }) => {
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${a.data.date.toUTCString()}</pubDate>
-      <category>${a.data.section}</category>
+      <category>${a.data.category}</category>
       <description>${summary}</description>
     </item>`;
     })
@@ -29,8 +29,8 @@ export const GET: APIRoute = async ({ site }) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Almanac — AI &amp; Dentistry</title>
-    <description>A daily curated brief on AI and dentistry.</description>
+    <title>Almanac — Dentistry</title>
+    <description>A daily curated brief on dentistry.</description>
     <link>${siteUrl}${base}/</link>
     <language>en</language>${items}
   </channel>

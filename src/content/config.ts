@@ -1,5 +1,25 @@
 import { defineCollection, z } from 'astro:content';
 
+export const CATEGORIES = [
+  'conservative',
+  'endodontics',
+  'periodontology',
+  'implantology',
+  'orthodontics',
+  'other',
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
+export const CATEGORY_LABELS: Record<Category, string> = {
+  conservative: 'Conservative',
+  endodontics: 'Endodontics',
+  periodontology: 'Periodontology',
+  implantology: 'Implantology',
+  orthodontics: 'Orthodontics',
+  other: 'Other',
+};
+
 const articles = defineCollection({
   type: 'content',
   schema: z.object({
@@ -7,8 +27,8 @@ const articles = defineCollection({
     originalTitle: z.string(),
     date: z.coerce.date(),
     digestDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    section: z.enum(['ai', 'dentistry']),
-    rank: z.number().int().min(1).max(10),
+    category: z.enum(CATEGORIES),
+    rank: z.number().int().min(1).max(20),
     summary: z.string(),
     summaryLang: z.enum(['en', 'cs']),
     sourceId: z.string(),
@@ -27,8 +47,7 @@ const digests = defineCollection({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     builtAt: z.coerce.date(),
     intro: z.string(),
-    aiSlugs: z.array(z.string()),
-    dentistrySlugs: z.array(z.string()),
+    articleSlugs: z.array(z.string()),
     heroSlug: z.string(),
     stats: z.object({
       itemsFetched: z.number(),

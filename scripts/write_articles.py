@@ -11,11 +11,10 @@ from slugify import slugify
 from claude_rank import RankResult
 from models import (
     ArticleFrontmatter,
+    Category,
     DigestFrontmatter,
     DigestStats,
-    RankedItem,
     RawItem,
-    Section,
 )
 
 
@@ -24,9 +23,9 @@ ARTICLES_DIR = REPO_ROOT / "src" / "content" / "articles"
 DIGESTS_DIR = REPO_ROOT / "src" / "content" / "digests"
 
 
-def article_slug(date: str, section: Section, title: str) -> str:
+def article_slug(date: str, category: Category, title: str) -> str:
     base = slugify(title)[:60].rstrip("-") or "untitled"
-    return f"{date}-{section}-{base}"
+    return f"{date}-{category}-{base}"
 
 
 def write_digest(
@@ -46,27 +45,26 @@ def write_digest(
 
     # Build slug map first so we can resolve relatedIds.
     slug_by_claude_id: dict[str, str] = {}
-    all_picked: list[tuple[Section, RankedItem]] = (
-        [("ai", x) for x in result.digest.ai]
-        + [("dentistry", x) for x in result.digest.dentistry]
-    )
-    for section, ranked in all_picked:
-        slug_by_claude_id[ranked.id] = article_slug(today, section, ranked.title)
+    for ranked in result.digest.items:
+        slug_by_claude_id[ranked.id] = article_slug(today, ranked.category, ranked.title)
 
     article_paths: list[Path] = []
-    for section, ranked in all_picked:
+    ordered_slugs: list[str] = []
+    for ranked in sorted(result.digest.items, key=lambda x: x.rank):
         raw = items_by_id.get(ranked.id)
         if raw is None:
-            # Claude invented an id (shouldn't happen, but defend) — skip.
             continue
         slug = slug_by_claude_id[ranked.id]
-        related = [slug_by_claude_id[r] for r in ranked.related_ids if r in slug_by_claude_id]
+        ordered_slugs.append(slug)
+        related = [
+            slug_by_claude_id[r] for r in ranked.related_ids if r in slug_by_claude_id
+        ]
         fm = ArticleFrontmatter(
             title=ranked.title,
             originalTitle=raw.title,
             date=raw.published_at or raw.fetched_at,
             digestDate=today,
-            section=section,
+            category=ranked.category,
             rank=ranked.rank,
             summary=ranked.summary,
             summaryLang=raw.language,
@@ -83,17 +81,14 @@ def write_digest(
         path.write_text(frontmatter.dumps(post) + "\n")
         article_paths.append(path)
 
-    hero_slug = slug_by_claude_id.get(result.digest.hero_id)
-    if not hero_slug and article_paths:
-        hero_slug = article_paths[0].stem
+    hero_slug = slug_by_claude_id.get(result.digest.hero_id) or (ordered_slugs[0] if ordered_slugs else "")
 
     digest_fm = DigestFrontmatter(
         date=today,
         builtAt=datetime.now(timezone.utc),
         intro=result.digest.intro,
-        aiSlugs=[slug_by_claude_id[x.id] for x in result.digest.ai if x.id in slug_by_claude_id],
-        dentistrySlugs=[slug_by_claude_id[x.id] for x in result.digest.dentistry if x.id in slug_by_claude_id],
-        heroSlug=hero_slug or "",
+        articleSlugs=ordered_slugs,
+        heroSlug=hero_slug,
         stats=DigestStats(
             itemsFetched=items_fetched,
             itemsConsidered=items_considered,
@@ -119,8 +114,7 @@ def write_stub_digest(today: str, error_message: str) -> Path:
         date=today,
         builtAt=datetime.now(timezone.utc),
         intro=f"No digest today — pipeline error: {error_message}",
-        aiSlugs=[],
-        dentistrySlugs=[],
+        articleSlugs=[],
         heroSlug="",
         stats=DigestStats(
             itemsFetched=0, itemsConsidered=0, sourcesOk=0, sourcesError=0,
