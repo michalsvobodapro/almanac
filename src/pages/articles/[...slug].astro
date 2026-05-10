@@ -17,15 +17,31 @@ export async function getStaticPaths() {
 interface Props { article: CollectionEntry<'articles'>; }
 const { article } = Astro.props;
 const { data } = article;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const allArticles = await getCollection('articles');
 const related = data.relatedSlugs
   .map((s) => allArticles.find((a) => a.slug === s))
   .filter((a): a is NonNullable<typeof a> => a !== undefined)
   .slice(0, 3);
+
+const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
+const deepParas = (data.summaryDeep ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
 ---
 
-<BaseLayout title={data.title} description={data.summary}>
+<BaseLayout title={data.title} description={data.summary} ogImage={coverHref ?? undefined}>
+  {coverHref && (
+    <div class="article-cover">
+      <img src={coverHref} alt={data.coverAlt ?? ''} loading="eager" decoding="async" />
+      {data.coverSourceUrl && (
+        <p class="article-cover__credit">
+          Image via <a href={data.coverSourceUrl} target="_blank" rel="noopener noreferrer">{data.sourceName}</a>
+        </p>
+      )}
+    </div>
+  )}
+
   <article class="container container--narrow">
     <header class="article-page__head">
       <div class="article-page__meta">
@@ -43,6 +59,12 @@ const related = data.relatedSlugs
 
     <p class="article-page__summary">{data.summary}</p>
 
+    {deepParas.length > 0 && (
+      <div class="article-page__deep prose">
+        {deepParas.map((p) => <p>{p}</p>)}
+      </div>
+    )}
+
     <div class="article-page__source">
       <SourceBadge
         sourceName={data.sourceName}
@@ -53,6 +75,15 @@ const related = data.relatedSlugs
         Read at source →
       </a>
     </div>
+
+    {excerptParas.length > 0 && (
+      <details class="article-page__excerpt">
+        <summary>From the publisher's abstract</summary>
+        <div class="prose">
+          {excerptParas.map((p) => <p>{p}</p>)}
+        </div>
+      </details>
+    )}
 
     {data.tags.length > 0 && (
       <ul class="article-page__tags" role="list">
@@ -65,6 +96,31 @@ const related = data.relatedSlugs
 </BaseLayout>
 
 <style>
+  .article-cover {
+    max-width: var(--grid-max);
+    margin: 0 auto var(--space-6);
+    padding: 0 var(--gutter);
+  }
+  .article-cover img {
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-rule);
+    background: var(--color-bg-subtle);
+  }
+  .article-cover__credit {
+    margin: var(--space-2) 0 0;
+    font-size: var(--fs-xs);
+    color: var(--color-text-subtle);
+    text-align: right;
+  }
+  .article-cover__credit a {
+    color: inherit;
+    border-bottom: 1px solid currentColor;
+    text-decoration: none;
+  }
+
   .article-page__head { margin-bottom: var(--space-6); }
   .article-page__meta {
     display: flex;
@@ -94,6 +150,10 @@ const related = data.relatedSlugs
     margin: var(--space-6) 0;
     font-weight: 400;
   }
+  .article-page__deep {
+    margin: var(--space-6) 0;
+    color: var(--color-text);
+  }
   .article-page__source {
     display: flex;
     flex-wrap: wrap;
@@ -112,6 +172,29 @@ const related = data.relatedSlugs
     text-decoration: none;
   }
   .article-page__link:hover { color: var(--color-accent-hover); }
+  .article-page__excerpt {
+    margin: var(--space-6) 0;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-bg-elevated);
+  }
+  .article-page__excerpt summary {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--space-2) 0;
+  }
+  .article-page__excerpt[open] summary { color: var(--color-text); }
+  .article-page__excerpt .prose {
+    margin-top: var(--space-3);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+  }
   .article-page__tags {
     display: flex;
     flex-wrap: wrap;

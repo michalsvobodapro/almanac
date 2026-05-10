@@ -37,6 +37,7 @@ def write_digest(
     items_considered: int,
     sources_ok: int,
     sources_error: int,
+    covers_by_id: dict[str, str] | None = None,
 ) -> tuple[Path, list[Path]]:
     """Write digest + per-article files. Returns (digest_path, [article_paths])."""
 
@@ -59,6 +60,12 @@ def write_digest(
         related = [
             slug_by_claude_id[r] for r in ranked.related_ids if r in slug_by_claude_id
         ]
+        # Cover image path (set by enrichment pass before write_digest is called).
+        cover_relpath: str | None = None
+        cover_path = covers_by_id.get(ranked.id) if covers_by_id else None
+        if cover_path:
+            cover_relpath = f"/og-cache/{cover_path}"
+
         fm = ArticleFrontmatter(
             title=ranked.title,
             originalTitle=raw.title,
@@ -67,11 +74,16 @@ def write_digest(
             category=ranked.category,
             rank=ranked.rank,
             summary=ranked.summary,
+            summaryDeep=ranked.summary_deep,
             summaryLang=raw.language,
             sourceId=raw.source_id,
             sourceName=raw.source_name,
             sourceUrl=raw.url,  # type: ignore[arg-type]
             excerpt=raw.excerpt,
+            excerptFull=raw.excerpt_full,
+            coverImage=cover_relpath,
+            coverAlt=raw.title if cover_relpath else None,
+            coverSourceUrl=raw.cover_image_url if cover_relpath else None,  # type: ignore[arg-type]
             author=raw.author,
             tags=ranked.tags,
             relatedSlugs=related,
