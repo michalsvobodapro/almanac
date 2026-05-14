@@ -1,110 +1,135 @@
 {
-  "lastRunAt": "2026-05-14T06:44:17.275294+00:00",
+  "lastRunAt": "2026-05-14T17:30:04.363781+00:00",
   "sources": [
-    {
-      "id": "csk-news",
-      "name": "\u010cesk\u00e1 stomatologick\u00e1 komora",
-      "url": "https://www.dent.cz/rss/aktuality.xml",
-      "language": "cs",
-      "status": "ok",
-      "primaryCategory": "other",
-      "lastFetched": "2026-05-14T06:43:56.197026Z",
-      "itemsLastRun": 0
-    },
-    {
-      "id": "lks",
-      "name": "LKS \u2014 \u010dasopis \u010cSK",
-      "url": "https://www.dent.cz/lks/rss",
-      "language": "cs",
-      "status": "ok",
-      "primaryCategory": "other",
-      "lastFetched": "2026-05-14T06:43:56.938969Z",
-      "itemsLastRun": 0
-    },
-    {
-      "id": "pubmed-conservative",
-      "name": "PubMed \u2014 Conservative dentistry",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/conservative+dentistry/?limit=20",
-      "language": "en",
-      "status": "error",
-      "primaryCategory": "conservative",
-      "lastFetched": "2026-05-14T06:43:57.079130Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "pubmed-endodontics",
-      "name": "PubMed \u2014 Endodontics",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/endodontics/?limit=20",
-      "language": "en",
-      "status": "error",
-      "primaryCategory": "endodontics",
-      "lastFetched": "2026-05-14T06:44:00.716116Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "pubmed-periodontology",
-      "name": "PubMed \u2014 Periodontology",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/periodontitis+OR+periodontology/?limit=20",
-      "language": "en",
-      "status": "error",
-      "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-14T06:44:04.325290Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "pubmed-implantology",
-      "name": "PubMed \u2014 Implantology",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+implant/?limit=20",
-      "language": "en",
-      "status": "error",
-      "primaryCategory": "implantology",
-      "lastFetched": "2026-05-14T06:44:07.936156Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "pubmed-orthodontics",
-      "name": "PubMed \u2014 Orthodontics",
-      "url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/orthodontics/?limit=20",
-      "language": "en",
-      "status": "error",
-      "primaryCategory": "orthodontics",
-      "lastFetched": "2026-05-14T06:44:11.546193Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 403"
-    },
-    {
-      "id": "jada",
-      "name": "JADA \u2014 Journal of the American Dental Association",
-      "url": "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada",
-      "language": "en",
-      "status": "error",
-      "lastFetched": "2026-05-14T06:44:15.155194Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 404"
-    },
     {
       "id": "bdj",
       "name": "British Dental Journal",
       "url": "https://www.nature.com/bdj.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-14T06:44:15.473265Z",
-      "itemsLastRun": 0
+      "lastFetched": "2026-05-14T17:29:56.748345Z",
+      "itemsLastRun": 8
     },
     {
-      "id": "efp",
-      "name": "EFP \u2014 European Federation of Periodontology",
-      "url": "https://www.efp.org/news-events/news/feed/",
+      "id": "bdj-open",
+      "name": "BDJ Open",
+      "url": "https://www.nature.com/bdjopen.rss",
       "language": "en",
-      "status": "error",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:56.897697Z",
+      "itemsLastRun": 8
+    },
+    {
+      "id": "ebd",
+      "name": "Evidence-Based Dentistry",
+      "url": "https://www.nature.com/ebd.rss",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:56.921627Z",
+      "itemsLastRun": 8
+    },
+    {
+      "id": "ijos",
+      "name": "International Journal of Oral Science",
+      "url": "https://www.nature.com/ijos.rss",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:57.040876Z",
+      "itemsLastRun": 8
+    },
+    {
+      "id": "jcpe",
+      "name": "Journal of Clinical Periodontology",
+      "url": "https://onlinelibrary.wiley.com/feed/16000625/most-recent",
+      "language": "en",
+      "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-14T06:44:16.091504Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 404"
+      "lastFetched": "2026-05-14T17:29:57.076918Z",
+      "itemsLastRun": 17
+    },
+    {
+      "id": "jpr",
+      "name": "Journal of Periodontal Research",
+      "url": "https://onlinelibrary.wiley.com/feed/1600051x/most-recent",
+      "language": "en",
+      "status": "ok",
+      "primaryCategory": "periodontology",
+      "lastFetched": "2026-05-14T17:29:57.152184Z",
+      "itemsLastRun": 26
+    },
+    {
+      "id": "iej",
+      "name": "International Endodontic Journal",
+      "url": "https://onlinelibrary.wiley.com/feed/16000757/most-recent",
+      "language": "en",
+      "status": "ok",
+      "primaryCategory": "endodontics",
+      "lastFetched": "2026-05-14T17:29:57.213298Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "cdoe",
+      "name": "Community Dentistry and Oral Epidemiology",
+      "url": "https://onlinelibrary.wiley.com/feed/16000528/most-recent",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:57.333496Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "jopm",
+      "name": "Journal of Oral Pathology & Medicine",
+      "url": "https://onlinelibrary.wiley.com/feed/16000714/most-recent",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:57.395647Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "ejos",
+      "name": "European Journal of Oral Sciences",
+      "url": "https://onlinelibrary.wiley.com/feed/16000722/most-recent",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:57.495424Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "aae",
+      "name": "American Association of Endodontists",
+      "url": "https://www.aae.org/specialty/feed/",
+      "language": "en",
+      "status": "ok",
+      "primaryCategory": "endodontics",
+      "lastFetched": "2026-05-14T17:29:57.580093Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "dentistry-uk",
+      "name": "Dentistry (UK)",
+      "url": "https://www.dentistry.co.uk/feed/",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:29:59.231590Z",
+      "itemsLastRun": 9
+    },
+    {
+      "id": "dental-products-report",
+      "name": "Dental Products Report",
+      "url": "https://www.dentalproductsreport.com/rss/",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:30:00.139322Z",
+      "itemsLastRun": 30
+    },
+    {
+      "id": "dental-news",
+      "name": "Dental News",
+      "url": "https://www.dentalnews.com/feed/",
+      "language": "en",
+      "status": "ok",
+      "lastFetched": "2026-05-14T17:30:00.584923Z",
+      "itemsLastRun": 10
     },
     {
       "id": "dental-tribune",
@@ -112,7 +137,7 @@
       "url": "https://www.dental-tribune.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-14T06:44:16.874022Z",
+      "lastFetched": "2026-05-14T17:30:04.089961Z",
       "itemsLastRun": 1
     }
   ]

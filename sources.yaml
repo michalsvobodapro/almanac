@@ -8,92 +8,15 @@
 #
 # `primaryCategory` is just a hint for the /sources page UI. Claude classifies
 # each *item* into a category at digest time, not by source-level mapping.
-#
-# NOTE (v1.1 work): several feed URLs below are best-guesses from the relevant
-# publishers' homepages. Verify each one returns valid RSS before relying on it.
 
 defaults:
   fetchEvery: 24
-  userAgent: "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
+  userAgent: "Mozilla/5.0 (compatible; almanac-bot/1.0; +https://github.com/michalsvobodapro/almanac)"
   timeoutMs: 15000
   maxItems: 30
 
 sources:
-  # ── Czech ──────────────────────────────────────────────────────────────
-  - id: csk-news
-    name: "Česká stomatologická komora"
-    url: "https://www.dent.cz/rss/aktuality.xml"
-    language: cs
-    type: rss
-    trust: 5
-    primaryCategory: other
-    tags: [czech, regulatory]
-
-  - id: lks
-    name: "LKS — časopis ČSK"
-    url: "https://www.dent.cz/lks/rss"
-    language: cs
-    type: rss
-    trust: 4
-    primaryCategory: other
-    tags: [czech, journal]
-
-  # ── PubMed (per-specialty saved searches) ──────────────────────────────
-  # Replace IDs in URL once real saved-search RSS feeds are created on PubMed.
-  - id: pubmed-conservative
-    name: "PubMed — Conservative dentistry"
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/conservative+dentistry/?limit=20"
-    language: en
-    type: rss
-    trust: 4
-    primaryCategory: conservative
-    tags: [research, pubmed]
-
-  - id: pubmed-endodontics
-    name: "PubMed — Endodontics"
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/endodontics/?limit=20"
-    language: en
-    type: rss
-    trust: 4
-    primaryCategory: endodontics
-    tags: [research, pubmed]
-
-  - id: pubmed-periodontology
-    name: "PubMed — Periodontology"
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/periodontitis+OR+periodontology/?limit=20"
-    language: en
-    type: rss
-    trust: 4
-    primaryCategory: periodontology
-    tags: [research, pubmed]
-
-  - id: pubmed-implantology
-    name: "PubMed — Implantology"
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/dental+implant/?limit=20"
-    language: en
-    type: rss
-    trust: 4
-    primaryCategory: implantology
-    tags: [research, pubmed]
-
-  - id: pubmed-orthodontics
-    name: "PubMed — Orthodontics"
-    url: "https://pubmed.ncbi.nlm.nih.gov/rss/search/orthodontics/?limit=20"
-    language: en
-    type: rss
-    trust: 4
-    primaryCategory: orthodontics
-    tags: [research, pubmed]
-
-  # ── Specialty journals & associations ──────────────────────────────────
-  - id: jada
-    name: "JADA — Journal of the American Dental Association"
-    url: "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada"
-    language: en
-    type: rss
-    trust: 5
-    tags: [journal, peer-reviewed]
-
+  # ── Peer-reviewed journals (Nature / Springer) ─────────────────────────
   - id: bdj
     name: "British Dental Journal"
     url: "https://www.nature.com/bdj.rss"
@@ -102,14 +25,116 @@ sources:
     trust: 5
     tags: [journal, peer-reviewed]
 
-  - id: efp
-    name: "EFP — European Federation of Periodontology"
-    url: "https://www.efp.org/news-events/news/feed/"
+  - id: bdj-open
+    name: "BDJ Open"
+    url: "https://www.nature.com/bdjopen.rss"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed, open-access]
+
+  - id: ebd
+    name: "Evidence-Based Dentistry"
+    url: "https://www.nature.com/ebd.rss"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed, evidence]
+
+  - id: ijos
+    name: "International Journal of Oral Science"
+    url: "https://www.nature.com/ijos.rss"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed]
+
+  # ── Peer-reviewed journals (Wiley) ─────────────────────────────────────
+  - id: jcpe
+    name: "Journal of Clinical Periodontology"
+    url: "https://onlinelibrary.wiley.com/feed/16000625/most-recent"
     language: en
     type: rss
     trust: 5
     primaryCategory: periodontology
-    tags: [association, guidelines]
+    tags: [journal, peer-reviewed]
+
+  - id: jpr
+    name: "Journal of Periodontal Research"
+    url: "https://onlinelibrary.wiley.com/feed/1600051x/most-recent"
+    language: en
+    type: rss
+    trust: 5
+    primaryCategory: periodontology
+    tags: [journal, peer-reviewed]
+
+  - id: iej
+    name: "International Endodontic Journal"
+    url: "https://onlinelibrary.wiley.com/feed/16000757/most-recent"
+    language: en
+    type: rss
+    trust: 5
+    primaryCategory: endodontics
+    tags: [journal, peer-reviewed]
+
+  - id: cdoe
+    name: "Community Dentistry and Oral Epidemiology"
+    url: "https://onlinelibrary.wiley.com/feed/16000528/most-recent"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed, epidemiology]
+
+  - id: jopm
+    name: "Journal of Oral Pathology & Medicine"
+    url: "https://onlinelibrary.wiley.com/feed/16000714/most-recent"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed]
+
+  - id: ejos
+    name: "European Journal of Oral Sciences"
+    url: "https://onlinelibrary.wiley.com/feed/16000722/most-recent"
+    language: en
+    type: rss
+    trust: 5
+    tags: [journal, peer-reviewed]
+
+  # ── Specialty associations ─────────────────────────────────────────────
+  - id: aae
+    name: "American Association of Endodontists"
+    url: "https://www.aae.org/specialty/feed/"
+    language: en
+    type: rss
+    trust: 4
+    primaryCategory: endodontics
+    tags: [association]
+
+  # ── Trade press / news ─────────────────────────────────────────────────
+  - id: dentistry-uk
+    name: "Dentistry (UK)"
+    url: "https://www.dentistry.co.uk/feed/"
+    language: en
+    type: rss
+    trust: 3
+    tags: [news, trade]
+
+  - id: dental-products-report
+    name: "Dental Products Report"
+    url: "https://www.dentalproductsreport.com/rss/"
+    language: en
+    type: rss
+    trust: 3
+    tags: [news, products]
+
+  - id: dental-news
+    name: "Dental News"
+    url: "https://www.dentalnews.com/feed/"
+    language: en
+    type: rss
+    trust: 3
+    tags: [news, trade]
 
   - id: dental-tribune
     name: "Dental Tribune"
@@ -118,3 +143,12 @@ sources:
     type: rss
     trust: 3
     tags: [news, trade]
+
+  # ── Known-broken sources (kept here as docs; do not re-enable as-is) ───
+  # PubMed RSS (pubmed.ncbi.nlm.nih.gov/rss/search/…) now serves a reCAPTCHA
+  # challenge to non-browser clients — would need an E-utilities/EuropePMC
+  # JSON adapter (new code path; out of scope for this fix).
+  # JADA  https://jada.ada.org/action/showFeed?…       → HTTP 404
+  # EFP   https://www.efp.org/news-events/news/feed/   → HTTP 404
+  # CSK   https://www.dent.cz/rss/aktuality.xml        → HTML (silently fakes 200)
+  # LKS   https://www.dent.cz/lks/rss                  → HTML (silently fakes 200)
