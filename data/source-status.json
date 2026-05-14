@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-05-13T06:45:42.897558+00:00",
+  "lastRunAt": "2026-05-14T06:44:17.275294+00:00",
   "sources": [
     {
       "id": "csk-news",
@@ -8,7 +8,7 @@
       "language": "cs",
       "status": "ok",
       "primaryCategory": "other",
-      "lastFetched": "2026-05-13T06:45:21.851697Z",
+      "lastFetched": "2026-05-14T06:43:56.197026Z",
       "itemsLastRun": 0
     },
     {
@@ -18,7 +18,7 @@
       "language": "cs",
       "status": "ok",
       "primaryCategory": "other",
-      "lastFetched": "2026-05-13T06:45:22.539896Z",
+      "lastFetched": "2026-05-14T06:43:56.938969Z",
       "itemsLastRun": 0
     },
     {
@@ -28,7 +28,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "conservative",
-      "lastFetched": "2026-05-13T06:45:22.710863Z",
+      "lastFetched": "2026-05-14T06:43:57.079130Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -39,7 +39,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-05-13T06:45:26.410010Z",
+      "lastFetched": "2026-05-14T06:44:00.716116Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -50,7 +50,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-13T06:45:30.046632Z",
+      "lastFetched": "2026-05-14T06:44:04.325290Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -61,7 +61,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "implantology",
-      "lastFetched": "2026-05-13T06:45:33.683632Z",
+      "lastFetched": "2026-05-14T06:44:07.936156Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -72,7 +72,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "orthodontics",
-      "lastFetched": "2026-05-13T06:45:37.324662Z",
+      "lastFetched": "2026-05-14T06:44:11.546193Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -82,7 +82,7 @@
       "url": "https://jada.ada.org/action/showFeed?type=etoc&feed=rss&jc=tjada",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-05-13T06:45:40.964790Z",
+      "lastFetched": "2026-05-14T06:44:15.155194Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -92,7 +92,7 @@
       "url": "https://www.nature.com/bdj.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-13T06:45:41.348725Z",
+      "lastFetched": "2026-05-14T06:44:15.473265Z",
       "itemsLastRun": 0
     },
     {
@@ -102,7 +102,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-13T06:45:41.479082Z",
+      "lastFetched": "2026-05-14T06:44:16.091504Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 404"
     },
@@ -112,7 +112,7 @@
       "url": "https://www.dental-tribune.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-13T06:45:42.367484Z",
+      "lastFetched": "2026-05-14T06:44:16.874022Z",
       "itemsLastRun": 1
     }
   ]
