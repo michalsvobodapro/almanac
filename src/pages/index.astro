@@ -5,32 +5,39 @@ import HeroStory from '../components/HeroStory.astro';
 import ArticleGrid from '../components/ArticleGrid.astro';
 import EmptyState from '../components/EmptyState.astro';
 import { formatDate } from '../lib/format';
+import { selectWindow } from '../lib/window';
 
 const allArticles = await getCollection('articles');
 const allDigests = await getCollection('digests');
 
-// Latest digest with content. Empty stubs fall through.
+// Hero + editorial intro still come from the latest non-empty digest.
+// Empty stubs fall through.
 const latestDigest = allDigests
   .slice()
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
   .find((d) => d.data.articleSlugs.length > 0);
 
-let hero: any = null;
-let rest: any[] = [];
+const heroSlug = latestDigest?.data.heroSlug ?? null;
+const hero = heroSlug
+  ? (allArticles.find((a) => a.slug === heroSlug) ?? null)
+  : null;
 
-if (latestDigest) {
-  const heroSlug = latestDigest.data.heroSlug;
-  hero = allArticles.find((a) => a.slug === heroSlug) ?? null;
+// Rolling ~7-day window (with min-count fallback) over every article, then
+// grouped by day. The hero is pulled out of its day group so it isn't shown
+// twice; days left empty by that removal are dropped.
+const { flat, groups } = selectWindow(allArticles);
+const dayGroups = groups
+  .map((g) => ({
+    date: g.date,
+    articles: g.articles.filter((a) => a.slug !== heroSlug),
+  }))
+  .filter((g) => g.articles.length > 0);
 
-  rest = latestDigest.data.articleSlugs
-    .filter((s) => s !== heroSlug)
-    .map((s) => allArticles.find((a) => a.slug === s))
-    .filter((a): a is NonNullable<typeof a> => a !== undefined);
-}
-
-const description = latestDigest
-  ? `Almanac for ${formatDate(latestDigest.data.date)} — ${rest.length + (hero ? 1 : 0)} hand-picked dentistry stories.`
-  : undefined;
+const storyCount = flat.length; // hero is counted once (it stays in `flat`)
+const description =
+  storyCount > 0
+    ? `Almanac — the past week in dentistry, ${storyCount} hand-picked stories.`
+    : undefined;
 ---
 
 <BaseLayout description={description}>
@@ -41,13 +48,20 @@ const description = latestDigest
       <p class="home__intro">{latestDigest.data.intro}</p>
     )}
 
-    {rest.length > 0 ? (
-      <ArticleGrid articles={rest} />
+    {dayGroups.length > 0 ? (
+      dayGroups.map((group) => (
+        <section class="home__day">
+          <h2 class="home__day-head">{formatDate(group.date)}</h2>
+          <ArticleGrid articles={group.articles} />
+        </section>
+      ))
     ) : (
-      <EmptyState
-        title="No digest yet"
-        message="The first edition lands tomorrow at 06:00 Prague."
-      />
+      !hero && (
+        <EmptyState
+          title="No digest yet"
+          message="The first edition lands tomorrow at 06:00 Prague."
+        />
+      )
     )}
   </div>
 </BaseLayout>
@@ -61,5 +75,22 @@ const description = latestDigest
     max-width: 60ch;
     margin: 0 0 var(--space-7);
     font-style: italic;
+  }
+  .home__day {
+    margin-bottom: var(--space-7);
+  }
+  .home__day:last-child {
+    margin-bottom: 0;
+  }
+  .home__day-head {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-rule);
   }
 </style>
