@@ -4,6 +4,7 @@ import { CATEGORIES, CATEGORY_LABELS, type Category } from '../../content/config
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleGrid from '../../components/ArticleGrid.astro';
 import EmptyState from '../../components/EmptyState.astro';
+import { selectWindow } from '../../lib/window';
 
 export async function getStaticPaths() {
   return CATEGORIES.map((category) => ({
@@ -15,8 +16,13 @@ export async function getStaticPaths() {
 interface Props { category: Category; }
 const { category } = Astro.props;
 
-const articles = (await getCollection('articles', (a) => a.data.category === category))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+// Same rolling-window + min-count fallback as the home page, so a specialty
+// stays fresh as data grows and never reads as a single thin day.
+const categoryArticles = await getCollection(
+  'articles',
+  (a) => a.data.category === category,
+);
+const { flat: articles } = selectWindow(categoryArticles);
 
 const blurbs: Record<Category, string> = {
   conservative: 'Restorative materials, caries detection, operative technique. The everyday chair work.',
