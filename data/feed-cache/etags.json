@@ -1,27 +1,27 @@
 {
   "aae": {
-    "etag": "W/\"e26baa95cd30ef664c860e01c92f492f\"",
-    "last_modified": "Wed, 13 May 2026 19:09:18 GMT"
+    "etag": "W/\"4b8e4fdeb07594e42fdca398a130fd45\"",
+    "last_modified": "Mon, 18 May 2026 20:45:42 GMT"
   },
   "bdj": {
     "etag": "\"ce6d6511a27fc690fc8a4e4c909bc03e\""
   },
   "bdj-open": {
-    "etag": "\"1456aab95a55e43169265850236790dc\""
+    "etag": "\"62c2ab78a8842ade8eefa84609e850b6\""
   },
   "cdoe": {
-    "last_modified": "Sun, 17 May 2026 07:38:22 GMT"
+    "last_modified": "Mon, 18 May 2026 07:41:30 GMT"
   },
   "dental-news": {
-    "etag": "\"6d23a95ead04353549469ff5cda65483\"",
-    "last_modified": "Fri, 08 May 2026 13:48:13 GMT"
+    "etag": "\"21a3cbe3db3498e8f01c183684ab8899\"",
+    "last_modified": "Mon, 18 May 2026 11:15:43 GMT"
   },
   "dental-tribune": {
-    "last_modified": "Mon, 18 May 2026 07:57:58 GMT"
+    "last_modified": "Tue, 19 May 2026 07:32:25 GMT"
   },
   "dentistry-uk": {
-    "etag": "\"f78fb13adabcaa9d67c487a351aec757\"",
-    "last_modified": "Mon, 18 May 2026 07:22:25 GMT"
+    "etag": "\"ac93c57120ae92f5b53eefee91b30f9c\"",
+    "last_modified": "Tue, 19 May 2026 06:28:00 GMT"
   },
   "ebd": {
     "etag": "\"9d4899b1c26cc6d48be6e0a9ca8584d0\""
@@ -30,18 +30,18 @@
     "last_modified": "Mon, 18 May 2026 07:42:04 GMT"
   },
   "iej": {
-    "last_modified": "Sun, 17 May 2026 07:38:59 GMT"
+    "last_modified": "Mon, 18 May 2026 07:42:09 GMT"
   },
   "ijos": {
-    "etag": "\"6dd20e6d1826f11ead6a831e05a36726\""
+    "etag": "\"580fc05db3c302eb38db25045d4eaf2b\""
   },
   "jcpe": {
-    "last_modified": "Sun, 17 May 2026 07:38:43 GMT"
+    "last_modified": "Mon, 18 May 2026 07:41:51 GMT"
   },
   "jopm": {
     "last_modified": "Mon, 18 May 2026 07:42:00 GMT"
   },
   "jpr": {
-    "last_modified": "Sun, 17 May 2026 07:38:21 GMT"
+    "last_modified": "Mon, 18 May 2026 07:41:28 GMT"
   }
 }
