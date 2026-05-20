@@ -34,10 +34,14 @@ Write as if introducing the story yourself.
 
 You will receive a JSON array of candidate items, each with `id`, `title`,
 `excerpt`, `sourceName`, `language` ("en" or "cs"), `publishedAt`, and `url`.
-Items are from the last 24 hours.
+Items are from the last 72 hours; the orchestrator has already removed
+anything already published in an earlier digest, so freshness to the reader
+is guaranteed.
 
-Pick the 10 best stories. Aim for breadth across the dental specialties; do
-not let one specialty dominate unless the day genuinely warrants it.
+Pick up to 12 of the best stories, but no fewer than what is genuinely
+strong — don't pad with weak items to hit a number. Aim for breadth across
+the dental specialties; do not let one specialty dominate unless the day
+genuinely warrants it.
 
 For each pick you write TWO summaries:
 - `summary`: 2–3 sentences, ~50–80 words. The card-and-feed version. Sharp,

@@ -23,13 +23,14 @@ from write_articles import article_slug, write_digest, write_stub_digest
 
 
 PRAGUE = ZoneInfo("Europe/Prague")
-LOOKBACK_HOURS = 24
+LOOKBACK_HOURS = 72
 MAX_ITEMS_TO_CLAUDE = 150
 THIN_EXCERPT_THRESHOLD = 200  # below this many chars, fetch URL to enrich
 ENRICHMENT_USER_AGENT = "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 COVER_DIR = REPO_ROOT / "public" / "og-cache"
+ARTICLES_DIR = REPO_ROOT / "src" / "content" / "articles"
 
 
 def today_str(now: datetime | None = None) -> str:
@@ -45,6 +46,34 @@ def filter_recent(items: list[RawItem], hours: int = LOOKBACK_HOURS) -> list[Raw
         if ref >= cutoff:
             out.append(it)
     return out
+
+
+def previously_published_urls() -> set[str]:
+    """Scan committed article markdown for `sourceUrl` fields so the wider
+    lookback window doesn't re-pick stories from earlier digests."""
+    urls: set[str] = set()
+    if not ARTICLES_DIR.exists():
+        return urls
+    for path in ARTICLES_DIR.glob("*.md"):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if not text.startswith("---"):
+            continue
+        end = text.find("\n---", 3)
+        if end == -1:
+            continue
+        for line in text[3:end].splitlines():
+            stripped = line.strip()
+            if stripped.startswith("sourceUrl:"):
+                value = stripped.split(":", 1)[1].strip()
+                if value.startswith(("'", '"')) and value.endswith(value[0]):
+                    value = value[1:-1]
+                if value:
+                    urls.add(value)
+                break
+    return urls
 
 
 def trust_lookup() -> dict[str, int]:
@@ -116,10 +145,18 @@ def main() -> int:
         suffix = f" — {s.errorMessage}" if s.status == "error" else f" ({s.itemsLastRun} items)"
         print(f"    {marker} {s.id}{suffix}")
 
-    print("\n[2/5] Deduping & filtering to last 24h …")
+    print(f"\n[2/5] Deduping & filtering to last {LOOKBACK_HOURS}h …")
     deduped = dedupe(items, trust_lookup=trust_lookup())
     recent = filter_recent(deduped)
-    print(f"  {len(items)} fetched → {len(deduped)} after dedupe → {len(recent)} in last 24h")
+    print(f"  {len(items)} fetched → {len(deduped)} after dedupe → {len(recent)} in last {LOOKBACK_HOURS}h")
+
+    already_published = previously_published_urls()
+    if already_published:
+        before = len(recent)
+        recent = [i for i in recent if i.url not in already_published]
+        dropped = before - len(recent)
+        if dropped:
+            print(f"  dropped {dropped} already-published items (matched committed sourceUrl)")
 
     if len(recent) > MAX_ITEMS_TO_CLAUDE:
         recent = sorted(
