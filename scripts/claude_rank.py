@@ -18,7 +18,10 @@ from models import CATEGORIES, DigestResponse, RawItem
 
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 4096
+# 12 picks × (≤80w summary + ≤200w summaryDeep) + intro can easily approach
+# 5k tokens; 4096 truncated the tool-use mid-write and surfaced as
+# `KeyError: 'items'` downstream.
+MAX_TOKENS = 8192
 
 # Pricing per 1M tokens (Sonnet 4.6 baseline).
 PRICE_INPUT_PER_M = 3.00
