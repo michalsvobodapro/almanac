@@ -52,7 +52,7 @@ jobs:
         run: |
           git config user.name  "almanac-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add src/content/articles/ src/content/digests/ data/
+          git add src/content/articles/ src/content/digests/ data/ public/og-cache/
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
