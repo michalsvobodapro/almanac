@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-05-22T07:40:46.526660+00:00",
+  "lastRunAt": "2026-05-23T06:31:54.669938+00:00",
   "sources": [
     {
       "id": "bdj",
@@ -7,8 +7,8 @@
       "url": "https://www.nature.com/bdj.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:42.569577Z",
-      "itemsLastRun": 0
+      "lastFetched": "2026-05-23T06:31:49.961134Z",
+      "itemsLastRun": 8
     },
     {
       "id": "bdj-open",
@@ -16,7 +16,7 @@
       "url": "https://www.nature.com/bdjopen.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:42.695129Z",
+      "lastFetched": "2026-05-23T06:31:50.949172Z",
       "itemsLastRun": 8
     },
     {
@@ -25,8 +25,8 @@
       "url": "https://www.nature.com/ebd.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:43.435540Z",
-      "itemsLastRun": 8
+      "lastFetched": "2026-05-23T06:31:51.182201Z",
+      "itemsLastRun": 0
     },
     {
       "id": "ijos",
@@ -34,8 +34,8 @@
       "url": "https://www.nature.com/ijos.rss",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:43.492761Z",
-      "itemsLastRun": 8
+      "lastFetched": "2026-05-23T06:31:51.385038Z",
+      "itemsLastRun": 0
     },
     {
       "id": "jcpe",
@@ -44,8 +44,8 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-22T07:40:43.559719Z",
-      "itemsLastRun": 20
+      "lastFetched": "2026-05-23T06:31:51.597800Z",
+      "itemsLastRun": 21
     },
     {
       "id": "jpr",
@@ -54,7 +54,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-05-22T07:40:43.872347Z",
+      "lastFetched": "2026-05-23T06:31:51.927266Z",
       "itemsLastRun": 28
     },
     {
@@ -64,7 +64,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-05-22T07:40:44.029369Z",
+      "lastFetched": "2026-05-23T06:31:52.029436Z",
       "itemsLastRun": 30
     },
     {
@@ -73,7 +73,7 @@
       "url": "https://onlinelibrary.wiley.com/feed/16000528/most-recent",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:44.199796Z",
+      "lastFetched": "2026-05-23T06:31:52.218076Z",
       "itemsLastRun": 30
     },
     {
@@ -82,7 +82,7 @@
       "url": "https://onlinelibrary.wiley.com/feed/16000714/most-recent",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:44.368813Z",
+      "lastFetched": "2026-05-23T06:31:52.326054Z",
       "itemsLastRun": 30
     },
     {
@@ -91,7 +91,7 @@
       "url": "https://onlinelibrary.wiley.com/feed/16000722/most-recent",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:44.546257Z",
+      "lastFetched": "2026-05-23T06:31:52.440385Z",
       "itemsLastRun": 30
     },
     {
@@ -101,7 +101,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-05-22T07:40:44.645528Z",
+      "lastFetched": "2026-05-23T06:31:52.544952Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -110,9 +110,10 @@
       "name": "Dentistry (UK)",
       "url": "https://www.dentistry.co.uk/feed/",
       "language": "en",
-      "status": "ok",
-      "lastFetched": "2026-05-22T07:40:44.740052Z",
-      "itemsLastRun": 9
+      "status": "error",
+      "lastFetched": "2026-05-23T06:31:52.750679Z",
+      "itemsLastRun": 0,
+      "errorMessage": "HTTP 403"
     },
     {
       "id": "dental-products-report",
@@ -120,7 +121,7 @@
       "url": "https://www.dentalproductsreport.com/rss/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:45.564439Z",
+      "lastFetched": "2026-05-23T06:31:53.528282Z",
       "itemsLastRun": 30
     },
     {
@@ -129,7 +130,7 @@
       "url": "https://www.dentalnews.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:45.938733Z",
+      "lastFetched": "2026-05-23T06:31:53.854749Z",
       "itemsLastRun": 0
     },
     {
@@ -138,7 +139,7 @@
       "url": "https://www.dental-tribune.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-05-22T07:40:46.028237Z",
+      "lastFetched": "2026-05-23T06:31:53.979520Z",
       "itemsLastRun": 1
     }
   ]
