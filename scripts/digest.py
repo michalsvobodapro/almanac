@@ -24,6 +24,9 @@ from write_articles import article_slug, write_digest, write_stub_digest
 
 PRAGUE = ZoneInfo("Europe/Prague")
 LOOKBACK_HOURS = 72
+# If the normal window comes up empty, widen once so a day is never blank.
+# Already-published items are filtered out below, so this can't re-run old picks.
+FALLBACK_LOOKBACK_HOURS = 7 * 24
 MAX_ITEMS_TO_CLAUDE = 150
 THIN_EXCERPT_THRESHOLD = 200  # below this many chars, fetch URL to enrich
 ENRICHMENT_USER_AGENT = "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
@@ -147,8 +150,14 @@ def main() -> int:
 
     print(f"\n[2/5] Deduping & filtering to last {LOOKBACK_HOURS}h …")
     deduped = dedupe(items, trust_lookup=trust_lookup())
+    window = LOOKBACK_HOURS
     recent = filter_recent(deduped)
     print(f"  {len(items)} fetched → {len(deduped)} after dedupe → {len(recent)} in last {LOOKBACK_HOURS}h")
+
+    if not recent:
+        window = FALLBACK_LOOKBACK_HOURS
+        recent = filter_recent(deduped, hours=window)
+        print(f"  empty window — widened to {window}h → {len(recent)} items")
 
     already_published = previously_published_urls()
     if already_published:
@@ -183,7 +192,7 @@ def main() -> int:
 
     if not recent:
         print("\n[4/5] No fresh items — writing stub digest.")
-        write_stub_digest(date, "No fresh items in the last 24h.")
+        write_stub_digest(date, f"No fresh items in the last {window}h.")
         return 0
 
     print(f"\n[4/5] Calling Claude on {len(recent)} items …")
