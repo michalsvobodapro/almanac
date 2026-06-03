@@ -1,0 +1,53 @@
+name: Deploy Site
+
+# Manual rebuild + deploy of the current `main` to GitHub Pages, WITHOUT running
+# the digest pipeline. Use this to publish content/site changes (e.g. a merged
+# PR, a hand-edited digest) without regenerating today's edition — a plain
+# `digest.yml` dispatch always runs for "today" and can clobber an existing
+# same-day digest.
+on:
+  workflow_dispatch:
+
+permissions:
+  pages: write        # deploy to Pages
+  id-token: write     # OIDC for deploy-pages
+  contents: read
+
+# Share the digest group so a manual deploy and the daily run never deploy at once.
+concurrency:
+  group: "digest"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build site
+        env:
+          ALMANAC_GH_USER: ${{ github.repository_owner }}
+        run: pnpm build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
