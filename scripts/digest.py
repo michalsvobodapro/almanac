@@ -24,9 +24,11 @@ from write_articles import article_slug, write_digest, write_stub_digest
 
 PRAGUE = ZoneInfo("Europe/Prague")
 LOOKBACK_HOURS = 72
-# If the normal window comes up empty, widen once so a day is never blank.
-# Already-published items are filtered out below, so this can't re-run old picks.
-FALLBACK_LOOKBACK_HOURS = 7 * 24
+# If the normal window yields no *new* items, widen once so a day is never blank.
+# The widen test runs AFTER the already-published filter, so a window that's
+# non-empty but fully already-covered still triggers the fallback (slow journal
+# feeds go quiet for days at a time).
+FALLBACK_LOOKBACK_HOURS = 14 * 24
 MAX_ITEMS_TO_CLAUDE = 150
 THIN_EXCERPT_THRESHOLD = 200  # below this many chars, fetch URL to enrich
 ENRICHMENT_USER_AGENT = "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
@@ -150,22 +152,31 @@ def main() -> int:
 
     print(f"\n[2/5] Deduping & filtering to last {LOOKBACK_HOURS}h …")
     deduped = dedupe(items, trust_lookup=trust_lookup())
-    window = LOOKBACK_HOURS
-    recent = filter_recent(deduped)
-    print(f"  {len(items)} fetched → {len(deduped)} after dedupe → {len(recent)} in last {LOOKBACK_HOURS}h")
+    already_published = previously_published_urls()
 
+    def fresh_unpublished(hours: int) -> tuple[list[RawItem], int]:
+        """Items in the window that haven't appeared in a previous digest.
+        Returns (kept, in_window_count)."""
+        in_window = filter_recent(deduped, hours=hours)
+        kept = [i for i in in_window if i.url not in already_published]
+        return kept, len(in_window)
+
+    window = LOOKBACK_HOURS
+    recent, in_window = fresh_unpublished(window)
+    print(
+        f"  {len(items)} fetched → {len(deduped)} after dedupe → {in_window} in last "
+        f"{window}h → {len(recent)} new (dropped {in_window - len(recent)} already-published)"
+    )
+
+    # Widen once if nothing NEW survived. A window that's non-empty but fully
+    # already-covered must still widen, so the test is on post-filter `recent`.
     if not recent:
         window = FALLBACK_LOOKBACK_HOURS
-        recent = filter_recent(deduped, hours=window)
-        print(f"  empty window — widened to {window}h → {len(recent)} items")
-
-    already_published = previously_published_urls()
-    if already_published:
-        before = len(recent)
-        recent = [i for i in recent if i.url not in already_published]
-        dropped = before - len(recent)
-        if dropped:
-            print(f"  dropped {dropped} already-published items (matched committed sourceUrl)")
+        recent, in_window = fresh_unpublished(window)
+        print(
+            f"  no new items in {LOOKBACK_HOURS}h — widened to {window}h → "
+            f"{len(recent)} new (of {in_window} in window)"
+        )
 
     if len(recent) > MAX_ITEMS_TO_CLAUDE:
         recent = sorted(
