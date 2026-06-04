@@ -4,7 +4,7 @@ This file is read by Claude Code at the start of every session in this repo.
 
 ## What this is
 
-A static news portal aggregating dentistry news across six specialties (conservative, endodontics, periodontology, implantology, orthodontics, other), regenerated daily by a GitHub Actions cron at 04:00 UTC. See [README.md](./README.md) for the high-level pitch.
+A static news portal aggregating dentistry news across six specialties (conservative, endodontics, periodontology, implantology, orthodontics, other), regenerated daily by a GitHub Actions cron at 23:23 UTC (≈ Prague midnight; see Cron drift below). See [README.md](./README.md) for the high-level pitch.
 
 ## Stack
 
@@ -21,7 +21,7 @@ A static news portal aggregating dentistry news across six specialties (conserva
 - **Languages:** Articles preserve source language (EN or CS). Site chrome (nav, footer, settings) is English.
 - **Categorization:** Sources don't map 1:1 to specialties — Claude classifies each *item* into a category at digest time. Sources may set `primaryCategory` in `sources.yaml` as a hint for the /sources page only.
 - **Design:** Editorial / magazine. Warm paper light + true editorial dark. Fraunces (display) + Inter (body), both self-hosted woff2. No Google Fonts at runtime. **Not** Alveodont's clinical blue.
-- **Cron drift:** Accepted (GitHub schedules are best-effort). Cron is `32 1 * * *` UTC — an off-peak slot chosen so the typical +2.5–5h delay lands the edition in the early CEST/CET morning. Year-round; DST drift accepted.
+- **Cron drift:** Accepted (GitHub schedules are best-effort). Cron is `23 23 * * *` UTC ≈ local midnight in Prague — the earliest slot that's already "tomorrow" in `Europe/Prague` (which `digest.py` uses to date the edition), so the run can't generate the previous day. The typical +2.5–5h GitHub delay lands it ~03:00–06:00 local, before a 06:00 wake-up on a normal day. Year-round; DST drift accepted. A hard "done by 06:00" guarantee would need an external trigger.
 
 ## Workflow rules (inherited from ~/claude/CLAUDE.md)
 

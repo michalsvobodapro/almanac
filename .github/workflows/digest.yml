@@ -2,10 +2,14 @@ name: Daily Digest
 
 on:
   schedule:
-    # 01:32 UTC — an off-peak slot (not the congested top-of-hour). GitHub's
-    # best-effort scheduler delays this ~2.5–5h, landing the run ~06:00–08:30
-    # CEST. DST drift accepted.
-    - cron: "32 1 * * *"
+    # 23:23 UTC ≈ local midnight in Prague (00:23 CET winter / 01:23 CEST
+    # summer). digest.py dates the edition by Prague local time, so the cron
+    # must not fire before local midnight or it would generate the *previous*
+    # day's digest — 23:23 UTC is the earliest slot that's already "tomorrow"
+    # in Prague year-round. GitHub's best-effort scheduler then delays it
+    # ~2.5–5h, landing the run ~03:00–06:00 local — done before a 06:00 wake-up
+    # on a typical day. :23 is off-peak (avoids top-of-hour congestion).
+    - cron: "23 23 * * *"
   workflow_dispatch:
 
 permissions:
