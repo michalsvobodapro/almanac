@@ -21,7 +21,7 @@ A static news portal aggregating dentistry news across six specialties (conserva
 - **Languages:** Articles preserve source language (EN or CS). Site chrome (nav, footer, settings) is English.
 - **Categorization:** Sources don't map 1:1 to specialties — Claude classifies each *item* into a category at digest time. Sources may set `primaryCategory` in `sources.yaml` as a hint for the /sources page only.
 - **Design:** Editorial / magazine. Warm paper light + true editorial dark. Fraunces (display) + Inter (body), both self-hosted woff2. No Google Fonts at runtime. **Not** Alveodont's clinical blue.
-- **Cron drift:** Accepted. Cron is `0 4 * * *` UTC year-round.
+- **Cron drift:** Accepted (GitHub schedules are best-effort). Cron is `32 1 * * *` UTC — an off-peak slot chosen so the typical +2.5–5h delay lands the edition in the early CEST/CET morning. Year-round; DST drift accepted.
 
 ## Workflow rules (inherited from ~/claude/CLAUDE.md)
 

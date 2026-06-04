@@ -2,8 +2,10 @@ name: Daily Digest
 
 on:
   schedule:
-    # 04:00 UTC = 06:00 CEST (summer) / 05:00 CET (winter). DST drift accepted.
-    - cron: "0 4 * * *"
+    # 01:32 UTC — an off-peak slot (not the congested top-of-hour). GitHub's
+    # best-effort scheduler delays this ~2.5–5h, landing the run ~06:00–08:30
+    # CEST. DST drift accepted.
+    - cron: "32 1 * * *"
   workflow_dispatch:
 
 permissions:
