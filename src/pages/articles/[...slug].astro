@@ -5,8 +5,10 @@ import CategoryBadge from '../../components/CategoryBadge.astro';
 import EvidenceBadge from '../../components/EvidenceBadge.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import RelatedRail from '../../components/RelatedRail.astro';
+import CiteButtons from '../../components/CiteButtons.astro';
 import DateLine from '../../components/DateLine.astro';
 import { readingMinutes } from '../../lib/readingTime';
+import { citationVancouver, citationBibtex } from '../../lib/citation';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -106,6 +108,10 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       <a class="article-page__link" href={data.sourceUrl} target="_blank" rel="noopener noreferrer">
         Read at source →
       </a>
+    </div>
+
+    <div class="article-page__cite">
+      <CiteButtons vancouver={citationVancouver(data)} bibtex={citationBibtex(data)} />
     </div>
 
     {excerptParas.length > 0 && (
@@ -259,6 +265,7 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
     text-decoration: none;
   }
   .article-page__link:hover { color: var(--color-accent-hover); }
+  .article-page__cite { margin: var(--space-4) 0; }
   .article-page__excerpt {
     margin: var(--space-6) 0;
     border: 1px solid var(--color-rule);
