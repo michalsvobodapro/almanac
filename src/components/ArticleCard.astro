@@ -16,6 +16,7 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
   class="article-card"
   data-source-id={data.sourceId}
   data-category={data.category}
+  data-slug={article.slug}
 >
   {coverHref ? (
     <a class="article-card__cover" href={href} aria-hidden="true" tabindex="-1">

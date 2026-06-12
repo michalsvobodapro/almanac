@@ -67,6 +67,15 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
       </div>
     </section>
 
+    <section class="settings-section">
+      <h2>Reading</h2>
+      <p class="settings-help">Stories you've already seen fade so your eye jumps to what's new. Hover a faded card to bring it back.</p>
+      <div class="settings-row" data-setting="dim-read">
+        <label><input type="checkbox" name="dimRead" /> Dim stories I've already read</label>
+        <button type="button" id="settings-clear-read" class="settings-inline-btn">Clear read history</button>
+      </div>
+    </section>
+
     <section class="settings-section settings-section--reset">
       <button type="button" id="settings-reset" class="settings-reset">Reset to defaults</button>
     </section>
@@ -80,6 +89,8 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     hiddenSources: 'almanac.hiddenSources',
     hiddenCategories: 'almanac.hiddenCategories',
     compact: 'almanac.compactCards',
+    dimRead: 'almanac.dimRead',
+    read: 'almanac.read',
   };
 
   function rebuildHideRules() {
@@ -131,6 +142,10 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
   const compactInput = document.querySelector<HTMLInputElement>('[data-setting="compact"] input[name="compact"]');
   if (compactInput) compactInput.checked = compact;
 
+  // Read-dimming is ON by default — checked unless explicitly turned 'off'.
+  const dimInput = document.querySelector<HTMLInputElement>('[data-setting="dim-read"] input[name="dimRead"]');
+  if (dimInput) dimInput.checked = localStorage.getItem(KEYS.dimRead) !== 'off';
+
   document.querySelectorAll<HTMLInputElement>('[data-setting="theme"] input').forEach((el) => {
     el.addEventListener('change', () => {
       if (el.value === 'system') localStorage.removeItem(KEYS.theme);
@@ -173,6 +188,20 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
       applyCompact(compactInput.checked);
     });
   }
+
+  if (dimInput) {
+    dimInput.addEventListener('change', () => {
+      // Default is ON, so we only persist the OFF state.
+      if (dimInput.checked) localStorage.removeItem(KEYS.dimRead);
+      else localStorage.setItem(KEYS.dimRead, 'off');
+      document.getElementById('almanac-read-rules')?.remove();
+    });
+  }
+
+  document.getElementById('settings-clear-read')?.addEventListener('click', () => {
+    localStorage.removeItem(KEYS.read);
+    document.getElementById('almanac-read-rules')?.remove();
+  });
 
   document.getElementById('settings-reset')?.addEventListener('click', () => {
     Object.values(KEYS).forEach((k) => localStorage.removeItem(k));
@@ -229,6 +258,19 @@ const sources = ((sourceStatusData as { sources?: SourceStatus[] })?.sources ?? 
     cursor: pointer;
     font-size: var(--fs-sm);
   }
+
+  .settings-inline-btn {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .settings-inline-btn:hover { color: var(--color-accent); }
 
   .settings-section--reset { border-top: 1px solid var(--color-rule); }
   .settings-reset {

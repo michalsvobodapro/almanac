@@ -15,6 +15,7 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
   class:list={['hero-story', { 'hero-story--with-cover': !!coverHref }]}
   data-source-id={data.sourceId}
   data-category={data.category}
+  data-slug={article.slug}
 >
   <div class="hero-story__text">
     <div class="hero-story__meta">

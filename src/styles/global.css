@@ -64,3 +64,12 @@ main {
   transition: transform var(--transition-fast);
 }
 .skip-link:focus { transform: translateY(0); }
+
+/* Read-state dimming: cards already seen fade (rule injected pre-paint by the
+   BaseLayout bootstrap from localStorage). Hover restores full opacity so a
+   dimmed card stays fully readable on demand. */
+[data-slug] { transition: opacity var(--transition-base); }
+[data-slug]:hover { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  [data-slug] { transition: none; }
+}
