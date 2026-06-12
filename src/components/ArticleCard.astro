@@ -1,5 +1,6 @@
 ---
 import CategoryBadge from './CategoryBadge.astro';
+import EvidenceBadge from './EvidenceBadge.astro';
 import SourceBadge from './SourceBadge.astro';
 import type { CollectionEntry } from 'astro:content';
 
@@ -26,6 +27,9 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
   <div class="article-card__body">
     <div class="article-card__head">
       <CategoryBadge category={data.category} />
+      {data.evidenceType && (
+        <EvidenceBadge type={data.evidenceType} grade={data.evidenceGrade} compact />
+      )}
     </div>
     <h3 class="article-card__title">
       <a href={href}>{data.title}</a>

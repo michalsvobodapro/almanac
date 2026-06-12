@@ -2,9 +2,11 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CategoryBadge from '../../components/CategoryBadge.astro';
+import EvidenceBadge from '../../components/EvidenceBadge.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import RelatedRail from '../../components/RelatedRail.astro';
 import DateLine from '../../components/DateLine.astro';
+import { readingMinutes } from '../../lib/readingTime';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -25,6 +27,18 @@ const related = data.relatedSlugs
   .filter((a): a is NonNullable<typeof a> => a !== undefined)
   .slice(0, 3);
 
+// Prev/next within the same day's digest — kills the article dead-end.
+const allDigests = await getCollection('digests');
+const digest = allDigests.find((d) => d.data.date === data.digestDate);
+const ordered = digest?.data.articleSlugs ?? [];
+const here = ordered.indexOf(article.slug);
+const prev = here > 0 ? allArticles.find((a) => a.slug === ordered[here - 1]) ?? null : null;
+const next =
+  here >= 0 && here < ordered.length - 1
+    ? allArticles.find((a) => a.slug === ordered[here + 1]) ?? null
+    : null;
+
+const minutes = readingMinutes(data.summary, data.summaryDeep, data.excerptFull);
 const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
 const deepParas = (data.summaryDeep ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
 const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
@@ -47,6 +61,7 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       <div class="article-page__meta">
         <CategoryBadge category={data.category} />
         <DateLine date={data.date} />
+        <span class="article-page__readtime">{minutes} min read</span>
       </div>
       <h1 class="article-page__title">{data.title}</h1>
       {data.title !== data.originalTitle && (
@@ -55,9 +70,26 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
           <span>{data.originalTitle}</span>
         </p>
       )}
+      {data.evidenceType && (
+        <div class="article-page__evidence">
+          <EvidenceBadge
+            type={data.evidenceType}
+            grade={data.evidenceGrade}
+            sampleSize={data.sampleSize}
+            note={data.evidenceNote}
+          />
+        </div>
+      )}
     </header>
 
     <p class="article-page__summary">{data.summary}</p>
+
+    {data.clinicalTakeaway && (
+      <aside class="takeaway" lang={data.summaryLang}>
+        <span class="takeaway__eyebrow">Chairside takeaway</span>
+        <p class="takeaway__text">{data.clinicalTakeaway}</p>
+      </aside>
+    )}
 
     {deepParas.length > 0 && (
       <div class="article-page__deep prose">
@@ -89,6 +121,23 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       <ul class="article-page__tags" role="list">
         {data.tags.map((t) => <li>#{t}</li>)}
       </ul>
+    )}
+
+    {(prev || next) && (
+      <nav class="article-page__pager" aria-label="More from this edition">
+        {prev ? (
+          <a class="pager pager--prev" href={`${base}/articles/${prev.slug}/`}>
+            <span class="pager__dir">← Previous</span>
+            <span class="pager__title">{prev.data.title}</span>
+          </a>
+        ) : <span></span>}
+        {next ? (
+          <a class="pager pager--next" href={`${base}/articles/${next.slug}/`}>
+            <span class="pager__dir">Next →</span>
+            <span class="pager__title">{next.data.title}</span>
+          </a>
+        ) : <span></span>}
+      </nav>
     )}
 
     <RelatedRail articles={related} />
@@ -125,8 +174,46 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
   .article-page__meta {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-3);
     margin-bottom: var(--space-4);
+  }
+  .article-page__readtime {
+    font-size: var(--fs-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.02em;
+  }
+  .article-page__readtime::before {
+    content: '·';
+    margin-right: var(--space-3);
+    color: var(--color-rule-strong);
+  }
+  .article-page__evidence { margin-top: var(--space-4); }
+
+  /* Chairside takeaway — restrained editorial callout, not a clinical alert. */
+  .takeaway {
+    margin: var(--space-6) 0;
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--color-accent);
+    background: color-mix(in oklab, var(--color-accent) 5%, var(--color-bg-elevated));
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  .takeaway__eyebrow {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-2);
+  }
+  .takeaway__text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    line-height: var(--lh-snug);
+    color: var(--color-text);
   }
   .article-page__title {
     font-size: clamp(1.75rem, 4vw, var(--fs-3xl));
@@ -209,5 +296,50 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
     padding: 2px 8px;
     background: var(--color-bg-subtle);
     border-radius: var(--radius-sm);
+  }
+
+  /* Prev/next within the day's edition. */
+  .article-page__pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-rule);
+  }
+  .pager {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    background: var(--color-bg-elevated);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  .pager:hover { border-color: var(--color-rule-strong); box-shadow: var(--shadow-sm); }
+  .pager--next { text-align: right; }
+  .pager__dir {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+  }
+  .pager__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: var(--lh-snug);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (max-width: 560px) {
+    .article-page__pager { grid-template-columns: 1fr; }
+    .pager--next { text-align: left; }
   }
 </style>
