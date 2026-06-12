@@ -116,6 +116,91 @@ sources:
     trust: 5
     tags: [journal, peer-reviewed]
 
+  # ── Open literature APIs (EuropePMC + OpenAlex) ────────────────────────
+  # EuropePMC indexes MEDLINE + PMC + preprints with open JSON (no key, no
+  # reCAPTCHA) — the working replacement for the dead PubMed RSS. Each source is
+  # a EuropePMC search expression in `query`; the fetcher ANDs on a recency
+  # window + HAS_ABSTRACT, sorts by publication date. pubTypeList + MeSH come
+  # back too and ground evidence grading.
+  #
+  # PRECISION NOTE: bare keyword ORs (e.g. "implant", "periodontal") pull in
+  # adjacent biomedicine (orthopedic implants, gut-microbiome papers that merely
+  # mention periodontitis). So every query is TITLE-anchored (TITLE:term) and
+  # restricted to curated sources (SRC:MED MEDLINE + SRC:PPR preprints). The
+  # specialty split also guarantees category breadth, since the Haiku triage
+  # pass now reads every fetched item.
+  - id: epmc-perio
+    name: "EuropePMC · Periodontology"
+    query: '(TITLE:periodont* OR TITLE:gingiv* OR TITLE:"peri-implantitis" OR TITLE:"peri-implant") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: periodontology
+    maxItems: 12
+    tags: [literature, peer-reviewed]
+
+  - id: epmc-endo
+    name: "EuropePMC · Endodontics"
+    query: '(TITLE:endodontic* OR TITLE:"root canal" OR TITLE:"dental pulp" OR TITLE:pulpitis OR TITLE:"apical periodontitis") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: endodontics
+    maxItems: 12
+    tags: [literature, peer-reviewed]
+
+  - id: epmc-implant
+    name: "EuropePMC · Implantology"
+    query: '(TITLE:"dental implant*" OR TITLE:osseointegrat* OR TITLE:"implant-supported" OR TITLE:"implant-retained") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: implantology
+    maxItems: 12
+    tags: [literature, peer-reviewed]
+
+  - id: epmc-conservative
+    name: "EuropePMC · Conservative & Restorative"
+    query: '(TITLE:caries OR TITLE:"resin composite" OR TITLE:"composite resin" OR TITLE:"dental adhesive" OR TITLE:restorative OR TITLE:remineraliz* OR TITLE:"tooth wear") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: conservative
+    maxItems: 12
+    tags: [literature, peer-reviewed]
+
+  - id: epmc-ortho
+    name: "EuropePMC · Orthodontics"
+    query: '(TITLE:orthodontic* OR TITLE:"clear aligner*" OR TITLE:malocclusion OR TITLE:"tooth movement") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: orthodontics
+    maxItems: 10
+    tags: [literature, peer-reviewed]
+
+  - id: epmc-oral-med-surg
+    name: "EuropePMC · Oral medicine, surgery & prostho"
+    query: '(TITLE:"oral surgery" OR TITLE:"oral medicine" OR TITLE:"oral cancer" OR TITLE:"oral mucosa" OR TITLE:prosthodontic* OR TITLE:"pediatric dent*" OR TITLE:"third molar" OR TITLE:"oral squamous") AND (SRC:MED OR SRC:PPR)'
+    language: en
+    type: europepmc
+    trust: 4
+    primaryCategory: other
+    maxItems: 12
+    tags: [literature, peer-reviewed]
+
+  # OpenAlex breadth via the *classifier* (Dentistry concept C199343813) rather
+  # than keywords — precise without keyword leakage. `type` (article/review/
+  # preprint) also feeds grading; polite-pool mailto in defaults.
+  - id: openalex-dentistry
+    name: "OpenAlex · Dentistry"
+    filter: "concepts.id:C199343813,type:article|review"
+    language: en
+    type: openalex
+    trust: 3
+    maxItems: 20
+    tags: [literature, breadth]
+
   # ── Specialty associations ─────────────────────────────────────────────
   - id: aae
     name: "American Association of Endodontists"

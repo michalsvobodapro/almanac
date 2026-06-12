@@ -14,7 +14,7 @@ from typing import Any
 
 from anthropic import Anthropic
 
-from models import CATEGORIES, DigestResponse, RawItem
+from models import CATEGORIES, DigestResponse, RawItem, TriagedItem
 
 
 MODEL = "claude-sonnet-4-6"
@@ -46,13 +46,27 @@ strong — don't pad with weak items to hit a number. Aim for breadth across
 the dental specialties; do not let one specialty dominate unless the day
 genuinely warrants it.
 
-For each pick you write TWO summaries:
+Each candidate arrives pre-graded by a triage pass: it carries a `category`,
+an `evidenceType`/`evidenceGrade` (study design + GRADE-flavoured confidence),
+and a `topicThread`. Trust those grades — weight high-evidence items up, and
+when several items share a `topicThread` you may note the thread in your prose
+("the third short-implant cohort this month"). Keep each pick's `category`
+unless it is clearly wrong.
+
+For each pick you write TWO summaries plus a takeaway:
 - `summary`: 2–3 sentences, ~50–80 words. The card-and-feed version. Sharp,
   declarative.
 - `summaryDeep`: 4–7 sentences, ~150–200 words. The article-page version.
   Synthesizes the abstract and excerpt: what was studied, what was found,
   what it changes for clinical practice. Still your editorial voice — not a
   press release.
+- `clinicalTakeaway`: ONE sentence, ≤25 words, in the item's source language.
+  The chairside so-what: what this changes Monday morning, or why it doesn't
+  yet. Concrete and honest — say "too preliminary to change practice" when true.
+
+Set `guidelineFlag` true only when the story bears on a clinical practice
+guideline (EFP/ESE/ČSK/ADA/FDI or similar) — new, revised, or directly
+challenged by the evidence.
 
 For each pick, classify it into ONE category:
   - conservative   (caries, restorative materials, operative, esthetic)
@@ -112,6 +126,8 @@ SUBMIT_TOOL = {
                         "title": {"type": "string"},
                         "summary": {"type": "string"},
                         "summaryDeep": {"type": "string"},
+                        "clinicalTakeaway": {"type": "string"},
+                        "guidelineFlag": {"type": "boolean"},
                         "tags": {"type": "array", "items": {"type": "string"}, "maxItems": 4},
                         "relatedIds": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
                     },
@@ -138,24 +154,40 @@ def _estimate_input_chars(items: list[RawItem]) -> int:
     return sum(len(i.title) + len(i.excerpt or "") + 80 for i in items) + 4000
 
 
-def _items_payload(today: str, items: list[RawItem]) -> str:
-    return json.dumps({
-        "today": today,
-        "items": [
-            {
-                "id": f"{i.source_id}::{i.url}",
-                "title": i.title,
-                # Prefer the longer enriched excerpt when available so Claude
-                # can write a real `summaryDeep`, not a stretched headline.
-                "excerpt": (i.excerpt_full or i.excerpt or "")[:1500],
-                "sourceName": i.source_name,
-                "language": i.language,
-                "publishedAt": (i.published_at.isoformat() if i.published_at else ""),
-                "url": i.url,
-            }
-            for i in items
-        ],
-    }, ensure_ascii=False)
+def _items_payload(
+    today: str,
+    items: list[RawItem],
+    triaged_by_id: dict[str, TriagedItem] | None = None,
+) -> str:
+    triaged_by_id = triaged_by_id or {}
+
+    def _row(i: RawItem) -> dict[str, Any]:
+        iid = f"{i.source_id}::{i.url}"
+        row: dict[str, Any] = {
+            "id": iid,
+            "title": i.title,
+            # Prefer the longer enriched excerpt when available so Claude
+            # can write a real `summaryDeep`, not a stretched headline.
+            "excerpt": (i.excerpt_full or i.excerpt or "")[:1500],
+            "sourceName": i.source_name,
+            "language": i.language,
+            "publishedAt": (i.published_at.isoformat() if i.published_at else ""),
+            "url": i.url,
+        }
+        t = triaged_by_id.get(iid)
+        if t is not None:
+            row["category"] = t.category
+            row["evidenceType"] = t.evidence_type
+            row["evidenceGrade"] = t.evidence_grade
+            if t.evidence_note:
+                row["evidenceNote"] = t.evidence_note
+            if t.topic_thread:
+                row["topicThread"] = t.topic_thread
+        return row
+
+    return json.dumps(
+        {"today": today, "items": [_row(i) for i in items]}, ensure_ascii=False
+    )
 
 
 def _compute_cost(input_t: int, output_t: int, cached_t: int) -> float:
@@ -167,7 +199,11 @@ def _compute_cost(input_t: int, output_t: int, cached_t: int) -> float:
     )
 
 
-def rank(today: str, items: list[RawItem]) -> RankResult:
+def rank(
+    today: str,
+    items: list[RawItem],
+    triaged_by_id: dict[str, TriagedItem] | None = None,
+) -> RankResult:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
@@ -178,7 +214,7 @@ def rank(today: str, items: list[RawItem]) -> RankResult:
         )
 
     client = Anthropic()
-    user_payload = _items_payload(today, items)
+    user_payload = _items_payload(today, items, triaged_by_id)
 
     def _call(temperature: float) -> Any:
         return client.messages.create(
@@ -246,6 +282,8 @@ def _normalize_item(item: dict[str, Any]) -> dict[str, Any]:
         "title": item["title"],
         "summary": item["summary"],
         "summary_deep": item.get("summaryDeep"),
+        "clinical_takeaway": item.get("clinicalTakeaway"),
+        "guideline_flag": bool(item.get("guidelineFlag", False)),
         "tags": item.get("tags", []),
         "related_ids": item.get("relatedIds", []),
     }

@@ -15,6 +15,7 @@ from models import (
     DigestFrontmatter,
     DigestStats,
     RawItem,
+    TriagedItem,
 )
 
 
@@ -38,8 +39,15 @@ def write_digest(
     sources_ok: int,
     sources_error: int,
     covers_by_id: dict[str, str] | None = None,
+    triaged_by_id: dict[str, TriagedItem] | None = None,
 ) -> tuple[Path, list[Path]]:
-    """Write digest + per-article files. Returns (digest_path, [article_paths])."""
+    """Write digest + per-article files. Returns (digest_path, [article_paths]).
+
+    Evidence appraisal fields are merged in from `triaged_by_id` (keyed by the
+    same source_id::url id). Missing entries leave the fields unset → rendered
+    as "unrated", exactly like the pre-migration backlog.
+    """
+    triaged_by_id = triaged_by_id or {}
 
     ARTICLES_DIR.mkdir(parents=True, exist_ok=True)
     DIGESTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -66,6 +74,8 @@ def write_digest(
         if cover_path:
             cover_relpath = f"/og-cache/{cover_path}"
 
+        triaged = triaged_by_id.get(ranked.id)
+
         fm = ArticleFrontmatter(
             title=ranked.title,
             originalTitle=raw.title,
@@ -87,6 +97,13 @@ def write_digest(
             author=raw.author,
             tags=ranked.tags,
             relatedSlugs=related,
+            evidenceType=triaged.evidence_type if triaged else None,
+            evidenceGrade=triaged.evidence_grade if triaged else "na",
+            sampleSize=triaged.sample_size if triaged else None,
+            evidenceNote=triaged.evidence_note if triaged else None,
+            topicThread=triaged.topic_thread if triaged else None,
+            clinicalTakeaway=ranked.clinical_takeaway,
+            guidelineFlag=ranked.guideline_flag,
         )
         post = frontmatter.Post("", **fm.model_dump(mode="json", exclude_none=True))
         path = ARTICLES_DIR / f"{slug}.md"

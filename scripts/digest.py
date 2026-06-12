@@ -17,7 +17,7 @@ import httpx
 from dedupe import dedupe
 from enrichment import download_image, enrich_metadata
 from fetch_feeds import fetch_all, load_sources
-from models import RawItem
+from models import RawItem, TriagedItem
 from source_status import write_statuses
 from write_articles import article_slug, write_digest, write_stub_digest
 
@@ -30,6 +30,9 @@ LOOKBACK_HOURS = 72
 # feeds go quiet for days at a time).
 FALLBACK_LOOKBACK_HOURS = 14 * 24
 MAX_ITEMS_TO_CLAUDE = 150
+# How many triage-kept items to forward to the Sonnet editorial pass. Also the
+# cap used when triage fails and we fall back to recency ordering.
+SHORTLIST_SIZE = 28
 THIN_EXCERPT_THRESHOLD = 200  # below this many chars, fetch URL to enrich
 ENRICHMENT_USER_AGENT = "almanac-bot/1.0 (+https://github.com/michalsvobodapro/almanac)"
 
@@ -192,37 +195,65 @@ def main() -> int:
     print(f"  enriched {enriched_count} of {len(recent)} items via URL meta tags")
 
     if args.dry_run:
-        print("\n[4/5] (dry-run) Skipping Claude call.")
-        print("\nWould send to Claude:")
+        print("\n[4/6] (dry-run) Skipping triage + Claude calls.")
+        print("\nWould send to triage:")
         for i, it in enumerate(recent, 1):
             ex_len = len(it.excerpt_full or it.excerpt or "")
             cover = "🖼" if it.cover_image_url else "  "
-            print(f"  {i:3}. {cover} [{it.language}] {it.source_id}: {it.title[:70]} (excerpt: {ex_len}c)")
-        print("\n[5/5] (dry-run) Skipping write.")
+            pt = f" [{','.join(it.pub_types[:2])}]" if it.pub_types else ""
+            print(f"  {i:3}. {cover} [{it.language}] {it.source_id}: {it.title[:64]}{pt} ({ex_len}c)")
+        print("\n[5/6] (dry-run) Skipping editorial + write.")
         return 0
 
     if not recent:
-        print("\n[4/5] No fresh items — writing stub digest.")
+        print("\n[4/6] No fresh items — writing stub digest.")
         write_stub_digest(date, f"No fresh items in the last {window}h.")
         return 0
 
-    print(f"\n[4/5] Calling Claude on {len(recent)} items …")
     items_by_id = {f"{i.source_id}::{i.url}": i for i in recent}
 
+    # ── Stage B: triage + classify + evidence-grade (cheap Haiku over all). ──
+    # Degrades independently: a triage failure must never block the digest — we
+    # fall back to recency ordering with no grades.
+    print(f"\n[4/6] Triaging + grading {len(recent)} items (Haiku) …")
+    triaged_by_id: dict[str, TriagedItem] = {}
+    triage_cost = 0.0
+    shortlist = recent
+    try:
+        from triage import triage
+
+        tr = triage(recent)
+        triaged_by_id = tr.triaged
+        triage_cost = tr.cost_usd
+        kept = [items_by_id[i] for i in tr.kept_ids if i in items_by_id]
+        shortlist = kept[:SHORTLIST_SIZE] if kept else recent
+        print(
+            f"  ✓ kept {len(tr.kept_ids)}/{len(recent)} → shortlist {len(shortlist)}. "
+            f"Cost ${tr.cost_usd:.4f} (in {tr.input_tokens}t, out {tr.output_tokens}t, "
+            f"cached {tr.cached_tokens}t)"
+        )
+    except Exception as exc:
+        shortlist = sorted(
+            recent, key=lambda i: i.published_at or i.first_seen_at, reverse=True
+        )[:SHORTLIST_SIZE]
+        print(f"  ✗ triage failed ({exc}); proceeding un-graded with {len(shortlist)} items", file=sys.stderr)
+
+    # ── Stage D: editorial pass (Sonnet over the graded shortlist only). ──
+    print(f"\n[5/6] Calling Claude editorial on {len(shortlist)} shortlisted items …")
     from claude_rank import rank
 
     try:
-        result = rank(date, recent)
+        result = rank(date, shortlist, triaged_by_id)
     except Exception as exc:
         print(f"  ✗ Claude call failed after retry: {exc}", file=sys.stderr)
         write_stub_digest(date, str(exc))
         return 1
 
-    print(f"  ✓ Got digest. Cost: ${result.cost_usd:.4f}")
+    print(f"  ✓ Got digest. Editorial cost: ${result.cost_usd:.4f} (triage ${triage_cost:.4f}, total ${result.cost_usd + triage_cost:.4f})")
     print(f"    in: {result.input_tokens}t, out: {result.output_tokens}t, cached: {result.cached_tokens}t")
     print(f"    hero: {result.digest.hero_id}")
 
-    print(f"\n[5/5] Downloading cover images for {len(result.digest.items)} picks …")
+    print(f"\n[6/6] Downloading cover images for {len(result.digest.items)} picks …")
     picked: list[tuple[str, RawItem, str]] = []
     for ranked in result.digest.items:
         raw = items_by_id.get(ranked.id)
@@ -243,6 +274,7 @@ def main() -> int:
         sources_ok=ok,
         sources_error=err,
         covers_by_id=covers,
+        triaged_by_id=triaged_by_id,
     )
     print(f"  wrote {digest_path.relative_to(digest_path.parents[3])}")
     for p in article_paths:

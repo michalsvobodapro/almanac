@@ -34,6 +34,14 @@ ETAG_FILE = CACHE_DIR / "etags.json"
 CROSSREF_BASE = "https://api.crossref.org/journals"
 CROSSREF_LOOKBACK_DAYS = 30
 
+# EuropePMC + OpenAlex REST APIs — open JSON, no key, no reCAPTCHA. These replace
+# the dead PubMed RSS (now reCAPTCHA-walled) and add MEDLINE/PMC + preprint
+# coverage. Crucially they ship publication-type / MeSH metadata, which grounds
+# evidence grading downstream instead of leaving it a pure LLM guess.
+EUROPEPMC_SEARCH = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+OPENALEX_WORKS = "https://api.openalex.org/works"
+LITERATURE_LOOKBACK_DAYS = 21
+
 
 def utcnow() -> datetime:
     return datetime.now(timezone.utc)
@@ -212,6 +220,221 @@ def fetch_crossref(
     return items, status
 
 
+def _first_author(author_string: str | None) -> str | None:
+    """EuropePMC `authorString` is 'Smith J, Doe A, …'. Reduce to first + et al."""
+    if not author_string:
+        return None
+    parts = [p.strip() for p in author_string.split(",") if p.strip()]
+    if not parts:
+        return None
+    return f"{parts[0]} et al." if len(parts) > 1 else parts[0].rstrip(".")
+
+
+def _track_seen(url: str, seen: dict[str, str], now: datetime) -> datetime:
+    """Return first-seen datetime for a url, recording it if new."""
+    first_seen = seen.get(url)
+    if first_seen:
+        return _parse_date(first_seen) or now
+    seen[url] = now.isoformat()
+    return now
+
+
+def fetch_europepmc(
+    source: dict[str, Any],
+    defaults: dict[str, Any],
+    *,
+    seen: dict[str, str],
+    client: httpx.Client,
+) -> tuple[list[RawItem], SourceStatusEntry]:
+    """Query EuropePMC for recent dental literature. `query` in sources.yaml is a
+    EuropePMC search expression; we AND on a recency window + HAS_ABSTRACT."""
+    sid: str = source["id"]
+    name: str = source["name"]
+    language: Lang = source.get("language", "en")
+    primary_cat: Category | None = source.get("primaryCategory")
+    max_items: int = int(source.get("maxItems", defaults.get("maxItems", 30)))
+    base_query: str = source["query"]
+    now = utcnow()
+    cutoff = (now - timedelta(days=LITERATURE_LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+    today = now.strftime("%Y-%m-%d")
+    full_query = (
+        f"({base_query}) AND (FIRST_PDATE:[{cutoff} TO {today}]) AND (HAS_ABSTRACT:Y)"
+    )
+    params = {
+        "query": full_query,
+        "format": "json",
+        "resultType": "core",
+        "pageSize": str(max_items),
+        "sort": "P_PDATE_D desc",
+    }
+
+    def _err(msg: str) -> tuple[list[RawItem], SourceStatusEntry]:
+        return [], SourceStatusEntry(
+            id=sid, name=name, url=EUROPEPMC_SEARCH, language=language,
+            primaryCategory=primary_cat, status="error", errorMessage=msg,
+            lastFetched=now, itemsLastRun=0,
+        )
+
+    try:
+        resp = client.get(
+            EUROPEPMC_SEARCH, params=params,
+            timeout=defaults.get("timeoutMs", 15000) / 1000,
+        )
+    except Exception as exc:
+        return _err(f"{type(exc).__name__}: {exc}")
+    if resp.status_code >= 400:
+        return _err(f"HTTP {resp.status_code}")
+    try:
+        results = resp.json().get("resultList", {}).get("result", [])
+    except (json.JSONDecodeError, AttributeError, TypeError) as exc:
+        return _err(f"bad EuropePMC payload: {type(exc).__name__}")
+
+    items: list[RawItem] = []
+    for r in results:
+        title = (r.get("title") or "").strip().rstrip(".")
+        doi = r.get("doi")
+        pmid = r.get("pmid")
+        src = r.get("source")
+        if doi:
+            url = f"https://doi.org/{doi}"
+        elif src and (pmid or r.get("id")):
+            url = f"https://europepmc.org/article/{src}/{pmid or r.get('id')}"
+        else:
+            continue
+        if not title:
+            continue
+        pub_types = [
+            t for t in (r.get("pubTypeList", {}) or {}).get("pubType", []) if t
+        ]
+        mesh = [
+            m.get("descriptorName")
+            for m in (r.get("meshHeadingList", {}) or {}).get("meshHeading", [])
+            if m.get("descriptorName")
+        ]
+        first_seen_dt = _track_seen(url, seen, now)
+        items.append(RawItem(
+            source_id=sid,
+            source_name=name,
+            language=language,
+            title=title,
+            url=url,
+            published_at=_parse_date(r.get("firstPublicationDate")) or first_seen_dt,
+            excerpt=_strip_tags(r.get("abstractText"), limit=1500),
+            author=_first_author(r.get("authorString")),
+            first_seen_at=first_seen_dt,
+            fetched_at=now,
+            pub_types=pub_types,
+            mesh=mesh,
+        ))
+
+    status = SourceStatusEntry(
+        id=sid, name=name, url=EUROPEPMC_SEARCH, language=language,
+        primaryCategory=primary_cat, status="ok", lastFetched=now, itemsLastRun=len(items),
+    )
+    return items, status
+
+
+def _openalex_abstract(inverted: dict[str, list[int]] | None, limit: int = 1500) -> str:
+    """Reconstruct plain text from OpenAlex `abstract_inverted_index`."""
+    if not inverted:
+        return ""
+    positions: list[tuple[int, str]] = []
+    for word, idxs in inverted.items():
+        for i in idxs:
+            positions.append((i, word))
+    positions.sort(key=lambda p: p[0])
+    text = " ".join(w for _, w in positions)
+    return re.sub(r"\s+", " ", text).strip()[:limit]
+
+
+def fetch_openalex(
+    source: dict[str, Any],
+    defaults: dict[str, Any],
+    *,
+    seen: dict[str, str],
+    client: httpx.Client,
+) -> tuple[list[RawItem], SourceStatusEntry]:
+    """Query OpenAlex for recent dental works. `filter` is an OpenAlex filter
+    expression (use a concept id for precision, not free-text); we AND on a
+    recency window + has_abstract. OpenAlex `type` (article/review/preprint)
+    feeds evidence grading."""
+    sid: str = source["id"]
+    name: str = source["name"]
+    language: Lang = source.get("language", "en")
+    primary_cat: Category | None = source.get("primaryCategory")
+    max_items: int = int(source.get("maxItems", defaults.get("maxItems", 30)))
+    base_filter: str = source["filter"]
+    mailto: str = defaults.get("mailto", "almanac@users.noreply.github.com")
+    now = utcnow()
+    cutoff = (now - timedelta(days=LITERATURE_LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+    params = {
+        "filter": f"{base_filter},from_publication_date:{cutoff},has_abstract:true",
+        "sort": "publication_date:desc",
+        "per-page": str(max_items),
+        "mailto": mailto,
+    }
+
+    def _err(msg: str) -> tuple[list[RawItem], SourceStatusEntry]:
+        return [], SourceStatusEntry(
+            id=sid, name=name, url=OPENALEX_WORKS, language=language,
+            primaryCategory=primary_cat, status="error", errorMessage=msg,
+            lastFetched=now, itemsLastRun=0,
+        )
+
+    try:
+        resp = client.get(
+            OPENALEX_WORKS, params=params,
+            timeout=defaults.get("timeoutMs", 15000) / 1000,
+        )
+    except Exception as exc:
+        return _err(f"{type(exc).__name__}: {exc}")
+    if resp.status_code >= 400:
+        return _err(f"HTTP {resp.status_code}")
+    try:
+        results = resp.json().get("results", [])
+    except (json.JSONDecodeError, AttributeError, TypeError) as exc:
+        return _err(f"bad OpenAlex payload: {type(exc).__name__}")
+
+    items: list[RawItem] = []
+    for w in results:
+        title = (w.get("display_name") or "").strip().rstrip(".")
+        doi = w.get("doi")  # full URL form, e.g. https://doi.org/10.xxxx
+        landing = (w.get("primary_location") or {}).get("landing_page_url")
+        url = doi or landing or w.get("id")
+        if not title or not url:
+            continue
+        work_type = w.get("type")
+        authorships = w.get("authorships") or []
+        author = None
+        if authorships:
+            first = (authorships[0].get("author") or {}).get("display_name")
+            author = f"{first} et al." if first and len(authorships) > 1 else first
+        mesh = [
+            m.get("descriptor_name") for m in (w.get("mesh") or []) if m.get("descriptor_name")
+        ]
+        first_seen_dt = _track_seen(url, seen, now)
+        items.append(RawItem(
+            source_id=sid,
+            source_name=name,
+            language=language,
+            title=title,
+            url=url,
+            published_at=_parse_date(w.get("publication_date")) or first_seen_dt,
+            excerpt=_openalex_abstract(w.get("abstract_inverted_index")),
+            author=author,
+            first_seen_at=first_seen_dt,
+            fetched_at=now,
+            pub_types=[work_type] if work_type else [],
+            mesh=mesh,
+        ))
+
+    status = SourceStatusEntry(
+        id=sid, name=name, url=OPENALEX_WORKS, language=language,
+        primaryCategory=primary_cat, status="ok", lastFetched=now, itemsLastRun=len(items),
+    )
+    return items, status
+
+
 def fetch_one(
     source: dict[str, Any],
     defaults: dict[str, Any],
@@ -222,6 +445,10 @@ def fetch_one(
 ) -> tuple[list[RawItem], SourceStatusEntry]:
     if source.get("type") == "crossref":
         return fetch_crossref(source, defaults, seen=seen, client=client)
+    if source.get("type") == "europepmc":
+        return fetch_europepmc(source, defaults, seen=seen, client=client)
+    if source.get("type") == "openalex":
+        return fetch_openalex(source, defaults, seen=seen, client=client)
 
     sid: str = source["id"]
     url: str = source["url"]
@@ -328,8 +555,10 @@ def fetch_all() -> tuple[list[RawItem], list[SourceStatusEntry]]:
                 )
             except Exception as exc:
                 status = SourceStatusEntry(
-                    id=source["id"], name=source["name"], url=source["url"],
-                    language=source["language"], primaryCategory=source.get("primaryCategory"),
+                    id=source["id"], name=source["name"],
+                    url=source.get("url") or source.get("query", ""),
+                    language=source.get("language", "en"),
+                    primaryCategory=source.get("primaryCategory"),
                     status="error", errorMessage=f"unhandled: {type(exc).__name__}: {exc}",
                     lastFetched=utcnow(), itemsLastRun=0,
                 )
