@@ -1,0 +1,88 @@
+name: Weekly Synthesis
+
+on:
+  schedule:
+    # Sunday 12:00 UTC (~14:00 Prague) — well after the day's daily digest has
+    # landed, so the week's full set of stories (Mon–Sun) is available.
+    - cron: "0 12 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "weekly"
+  cancel-in-progress: false
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Python (pipeline) ───────────────────────────────────────────────
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: uv sync --frozen
+
+      # ── Node (Astro) ───────────────────────────────────────────────────
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # ── Audio toolchain (best-effort; weekly.py skips audio if absent) ──
+      - name: Install audio tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        continue-on-error: true
+
+      # ── Run weekly synthesis ───────────────────────────────────────────
+      - name: Run weekly synthesis
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TZ: Europe/Prague
+        run: uv run python scripts/weekly.py
+
+      - name: Commit weekly synthesis
+        run: |
+          git config user.name  "almanac-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add src/content/weekly/ public/audio/ 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No weekly to commit."
+          else
+            git commit -m "weekly: $(date -u +%Y-%m-%d)"
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
+
+      # ── Build & upload ─────────────────────────────────────────────────
+      - name: Build site
+        env:
+          ALMANAC_GH_USER: ${{ github.repository_owner }}
+        run: pnpm build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: weekly
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
