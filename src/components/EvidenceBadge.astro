@@ -1,0 +1,73 @@
+---
+// Restrained editorial evidence signal — a study-type label with a small
+// grade dot, NOT a loud clinical chip. Renders nothing for ungraded (legacy)
+// items so the ~80 pre-migration articles stay clean.
+import {
+  EVIDENCE_TYPE_LABELS,
+  EVIDENCE_GRADE_LABELS,
+  type EvidenceType,
+  type EvidenceGrade,
+} from '../content/config';
+
+interface Props {
+  type?: EvidenceType;
+  grade?: EvidenceGrade;
+  sampleSize?: number;
+  note?: string;
+  /** compact = card context (hide sample size + grade word, keep the dot) */
+  compact?: boolean;
+}
+const { type, grade = 'na', sampleSize, note, compact = false } = Astro.props;
+const showGradeWord = grade !== 'na' && !compact;
+const tooltip = note || (sampleSize ? `n=${sampleSize}` : undefined);
+---
+
+{type && (
+  <span
+    class:list={['evidence', `evidence--${grade}`, { 'evidence--compact': compact }]}
+    title={tooltip}
+  >
+    <span class="evidence__dot" aria-hidden="true"></span>
+    <span class="evidence__type">{EVIDENCE_TYPE_LABELS[type]}</span>
+    {showGradeWord && (
+      <span class="evidence__grade">· {EVIDENCE_GRADE_LABELS[grade]} confidence</span>
+    )}
+    {!compact && sampleSize ? <span class="evidence__n">· n={sampleSize}</span> : null}
+  </span>
+)}
+
+<style>
+  .evidence {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+  .evidence__dot {
+    align-self: center;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--grade-color, var(--color-text-subtle));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--grade-color, transparent) 14%, transparent);
+    flex: none;
+  }
+  .evidence__type {
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text);
+  }
+  .evidence--compact .evidence__type { color: var(--color-text-muted); }
+  .evidence__grade,
+  .evidence__n { color: var(--color-text-subtle); }
+
+  .evidence--high     { --grade-color: var(--color-success); }
+  .evidence--moderate { --grade-color: var(--color-warning); }
+  .evidence--low      { --grade-color: var(--color-text-subtle); }
+  .evidence--na       { --grade-color: var(--color-rule-strong); }
+</style>

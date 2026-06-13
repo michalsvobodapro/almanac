@@ -1,0 +1,109 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { CATEGORIES, CATEGORY_LABELS, type Category } from '../../content/config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleGrid from '../../components/ArticleGrid.astro';
+import EmptyState from '../../components/EmptyState.astro';
+
+// Full, paginated archive of EVERY article in a specialty (newest edition
+// first) — replaces the old rolling-window view, which left older articles
+// unreachable. Page 1 is /<category>/, page N is /<category>/N/.
+export const getStaticPaths = (async ({ paginate }) => {
+  const all = await getCollection('articles');
+  return CATEGORIES.flatMap((category) => {
+    const items = all
+      .filter((a) => a.data.category === category)
+      .sort((a, b) =>
+        b.data.digestDate.localeCompare(a.data.digestDate) || a.data.rank - b.data.rank,
+      );
+    return paginate(items, { params: { category }, props: { category }, pageSize: 12 });
+  });
+}) satisfies GetStaticPaths;
+
+interface Props { category: Category; page: Page<CollectionEntry<'articles'>>; }
+const { category, page } = Astro.props;
+
+const blurbs: Record<Category, string> = {
+  conservative: 'Restorative materials, caries detection, operative technique. The everyday chair work.',
+  endodontics: 'Pulp biology, instrumentation, obturation, retreatment. Where the canal meets the apex.',
+  periodontology: 'Perio classification, non-surgical and surgical therapy, regeneration, peri-implantitis.',
+  implantology: 'Implant systems, surgical protocols, peri-implant tissue, prosthetic complications.',
+  orthodontics: 'Aligners and fixed appliances, biomechanics, growth modification, retention.',
+  other: 'Oral surgery, prosthodontics, pediatric dentistry, oral medicine, regulation, education, business.',
+};
+
+const title =
+  page.currentPage > 1
+    ? `${CATEGORY_LABELS[category]} — page ${page.currentPage}`
+    : CATEGORY_LABELS[category];
+---
+
+<BaseLayout title={title} description={blurbs[category]}>
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Specialty</span>
+      <h1>{CATEGORY_LABELS[category]}</h1>
+      <p class="section-head__sub">{blurbs[category]}</p>
+      {page.total > 0 && (
+        <p class="section-head__count">
+          {page.total} {page.total === 1 ? 'story' : 'stories'} in the archive
+        </p>
+      )}
+    </header>
+
+    {page.data.length > 0
+      ? <ArticleGrid articles={page.data} />
+      : <EmptyState title={`No ${CATEGORY_LABELS[category].toLowerCase()} stories yet`} />
+    }
+
+    {page.lastPage > 1 && (
+      <nav class="pagination" aria-label="Pagination">
+        {page.url.prev
+          ? <a class="pagination__link" href={page.url.prev} rel="prev">← Newer</a>
+          : <span class="pagination__link pagination__link--disabled">← Newer</span>}
+        <span class="pagination__status">Page {page.currentPage} of {page.lastPage}</span>
+        {page.url.next
+          ? <a class="pagination__link" href={page.url.next} rel="next">Older →</a>
+          : <span class="pagination__link pagination__link--disabled">Older →</span>}
+      </nav>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: var(--space-7); }
+  .section-head h1 { margin: var(--space-2) 0; }
+  .section-head__sub {
+    font-size: var(--fs-md);
+    color: var(--color-text-muted);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .section-head__count {
+    margin: var(--space-3) 0 0;
+    font-size: var(--fs-sm);
+    color: var(--color-text-subtle);
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-rule);
+  }
+  .pagination__link {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+  }
+  .pagination__link:hover { background: var(--color-bg-subtle); }
+  .pagination__link--disabled { color: var(--color-text-subtle); pointer-events: none; }
+  .pagination__status { font-size: var(--fs-sm); color: var(--color-text-muted); }
+</style>
