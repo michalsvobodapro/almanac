@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Save-for-later list. Static page hydrated entirely from localStorage
+// (`almanac.saved`) + the build-time /saved-index.json — no backend, no account.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const indexUrl = `${base}/saved-index.json`;
+---
+
+<BaseLayout title="Saved" description="Your saved dentistry stories — stored only in this browser.">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Saved</span>
+      <h1>Saved for later</h1>
+      <p class="section-head__sub">Stored only in this browser — no account, no sync.</p>
+    </header>
+
+    <div class="saved-bar" id="saved-bar" hidden>
+      <span id="saved-count" class="saved-bar__count"></span>
+      <button type="button" id="export-all" class="saved-bar__btn">Export all as Anki (.csv)</button>
+    </div>
+
+    <ul id="saved-list" class="saved-list" role="list"></ul>
+    <p id="saved-empty" class="saved-empty" hidden>
+      Nothing saved yet. Tap the bookmark on any story to keep it here.
+    </p>
+  </div>
+
+  <script is:inline define:vars={{ indexUrl, base }}>
+    (function () {
+      var SKEY = 'almanac.saved';
+      var listEl = document.getElementById('saved-list');
+      var emptyEl = document.getElementById('saved-empty');
+      var barEl = document.getElementById('saved-bar');
+      var countEl = document.getElementById('saved-count');
+
+      function savedSlugs() {
+        return (localStorage.getItem(SKEY) || '').split(' ').filter(Boolean);
+      }
+      function setSaved(arr) {
+        if (arr.length) localStorage.setItem(SKEY, arr.join(' '));
+        else localStorage.removeItem(SKEY);
+      }
+      function csvField(s) { return '"' + (s || '').replace(/"/g, '""') + '"'; }
+      function back(it) {
+        var body = (it.takeaway && it.takeaway.trim()) || it.summary;
+        var grade = it.eg && it.eg !== 'na' ? ', ' + it.eg : '';
+        var ev = it.et ? ' [' + it.et + grade + ']' : '';
+        return body + ' — ' + it.source + ev;
+      }
+
+      fetch(indexUrl).then(function (r) { return r.json(); }).then(function (index) {
+        var bySlug = {};
+        index.forEach(function (it) { bySlug[it.slug] = it; });
+
+        function render() {
+          var slugs = savedSlugs();
+          var items = slugs.map(function (s) { return bySlug[s]; }).filter(Boolean);
+          items.sort(function (a, b) { return b.date.localeCompare(a.date); });
+          listEl.textContent = '';
+          if (!items.length) {
+            emptyEl.hidden = false;
+            barEl.hidden = true;
+            return;
+          }
+          emptyEl.hidden = true;
+          barEl.hidden = false;
+          countEl.textContent = items.length + (items.length === 1 ? ' story' : ' stories');
+
+          items.forEach(function (it) {
+            var li = document.createElement('li');
+            li.className = 'saved-item';
+
+            var head = document.createElement('div');
+            head.className = 'saved-item__head';
+            var cat = document.createElement('span');
+            cat.className = 'saved-item__cat saved-item__cat--' + it.category;
+            cat.textContent = it.category;
+            var rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'saved-item__remove';
+            rm.textContent = 'Remove';
+            rm.addEventListener('click', function () {
+              setSaved(savedSlugs().filter(function (s) { return s !== it.slug; }));
+              render();
+            });
+            head.appendChild(cat);
+            head.appendChild(rm);
+
+            var h = document.createElement('h2');
+            h.className = 'saved-item__title';
+            var a = document.createElement('a');
+            a.href = base + '/articles/' + it.slug + '/';
+            a.textContent = it.title;
+            h.appendChild(a);
+
+            var p = document.createElement('p');
+            p.className = 'saved-item__summary';
+            p.textContent = it.summary;
+
+            li.appendChild(head);
+            li.appendChild(h);
+            li.appendChild(p);
+            listEl.appendChild(li);
+          });
+        }
+
+        document.getElementById('export-all').addEventListener('click', function () {
+          var items = savedSlugs().map(function (s) { return bySlug[s]; }).filter(Boolean);
+          if (!items.length) return;
+          var csv = items.map(function (it) {
+            return csvField(it.title) + ',' + csvField(back(it));
+          }).join('\n') + '\n';
+          var url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+          var a = document.createElement('a');
+          a.href = url; a.download = 'almanac-saved.csv'; a.click();
+          URL.revokeObjectURL(url);
+        });
+
+        render();
+      }).catch(function () { emptyEl.hidden = false; });
+    })();
+  </script>
+
+  <style>
+    .section-head { margin-bottom: var(--space-6); }
+    .section-head h1 { margin: var(--space-2) 0; }
+    .section-head__sub { color: var(--color-text-muted); margin: 0; }
+    .saved-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-rule);
+      margin-bottom: var(--space-3);
+    }
+    .saved-bar__count { font-size: var(--fs-sm); color: var(--color-text-subtle); }
+    .saved-bar__btn {
+      font-family: var(--font-body);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .saved-list { margin: 0; padding: 0; }
+    .saved-item { padding: var(--space-5) 0; border-bottom: 1px solid var(--color-rule); }
+    .saved-item__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-2);
+    }
+    .saved-item__cat {
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cat, var(--color-text-muted));
+    }
+    .saved-item__cat--conservative   { --cat: var(--color-cat-conservative); }
+    .saved-item__cat--endodontics    { --cat: var(--color-cat-endodontics); }
+    .saved-item__cat--periodontology { --cat: var(--color-cat-periodontology); }
+    .saved-item__cat--implantology   { --cat: var(--color-cat-implantology); }
+    .saved-item__cat--orthodontics   { --cat: var(--color-cat-orthodontics); }
+    .saved-item__cat--other          { --cat: var(--color-cat-other); }
+    .saved-item__remove {
+      font-family: var(--font-body);
+      font-size: var(--fs-xs);
+      color: var(--color-text-subtle);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .saved-item__remove:hover { color: var(--color-error); }
+    .saved-item__title {
+      font-family: var(--font-display);
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      line-height: var(--lh-snug);
+      margin: 0 0 var(--space-2);
+    }
+    .saved-item__title a { color: var(--color-text); text-decoration: none; }
+    .saved-item__title a:hover { color: var(--color-accent); }
+    .saved-item__summary { font-size: var(--fs-sm); color: var(--color-text-muted); margin: 0; max-width: 70ch; }
+    .saved-empty { margin-top: var(--space-6); color: var(--color-text-subtle); }
+  </style>
+</BaseLayout>

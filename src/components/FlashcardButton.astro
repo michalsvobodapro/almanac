@@ -1,0 +1,53 @@
+---
+// One-click Anki "Basic" card export (.csv) for a single story. Front/back are
+// built at build time; the only JS is CSV-escaping + a Blob download.
+interface Props { front: string; back: string; filename: string; }
+const { front, back, filename } = Astro.props;
+---
+
+<button type="button" class="flash-btn" data-front={front} data-back={back} data-file={filename}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+    <path d="M3 10h18"></path>
+  </svg>
+  Anki card
+</button>
+
+<script>
+  function csvField(s: string): string {
+    return '"' + (s || '').replace(/"/g, '""') + '"';
+  }
+  document.querySelectorAll<HTMLButtonElement>('.flash-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const front = btn.getAttribute('data-front') || '';
+      const back = btn.getAttribute('data-back') || '';
+      const file = btn.getAttribute('data-file') || 'almanac-card.csv';
+      const csv = csvField(front) + ',' + csvField(back) + '\n';
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  });
+</script>
+
+<style>
+  .flash-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+  .flash-btn:hover { color: var(--color-text); border-color: var(--color-rule-strong); }
+</style>

@@ -50,6 +50,11 @@ function isActive(href: string) {
           <path d="m21 21-4.3-4.3"></path>
         </svg>
       </a>
+      <a class="site-header__icon" href={`${base}/saved/`} aria-label="Saved" aria-current={isActive('/saved/') ? 'page' : undefined}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </a>
       <ThemeToggle />
       <a class="site-header__icon site-header__settings" href={`${base}/settings/`} aria-label="Settings">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

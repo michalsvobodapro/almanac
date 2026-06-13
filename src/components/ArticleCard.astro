@@ -2,6 +2,7 @@
 import CategoryBadge from './CategoryBadge.astro';
 import EvidenceBadge from './EvidenceBadge.astro';
 import SourceBadge from './SourceBadge.astro';
+import SaveButton from './SaveButton.astro';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props { article: CollectionEntry<'articles'>; }
@@ -42,6 +43,7 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
         sourceUrl={data.sourceUrl}
         lang={data.summaryLang}
       />
+      <SaveButton slug={article.slug} />
     </div>
   </div>
 </article>
@@ -119,6 +121,10 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
     margin: 0;
   }
   .article-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
     margin-top: auto;
     padding-top: var(--space-2);
     border-top: 1px solid var(--color-rule);

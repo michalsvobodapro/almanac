@@ -6,9 +6,12 @@ import EvidenceBadge from '../../components/EvidenceBadge.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import RelatedRail from '../../components/RelatedRail.astro';
 import CiteButtons from '../../components/CiteButtons.astro';
+import FlashcardButton from '../../components/FlashcardButton.astro';
+import SaveButton from '../../components/SaveButton.astro';
 import DateLine from '../../components/DateLine.astro';
 import { readingMinutes } from '../../lib/readingTime';
 import { citationVancouver, citationBibtex } from '../../lib/citation';
+import { cardFront, cardBack } from '../../lib/anki';
 import { buildArcs, findArc } from '../../lib/arcs';
 
 export async function getStaticPaths() {
@@ -124,8 +127,16 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       </a>
     </div>
 
-    <div class="article-page__cite">
+    <div class="article-page__actions">
       <CiteButtons vancouver={citationVancouver(data)} bibtex={citationBibtex(data)} />
+      <div class="article-page__actions-right">
+        <FlashcardButton
+          front={cardFront(data)}
+          back={cardBack(data)}
+          filename={`almanac-${article.slug}.csv`}
+        />
+        <SaveButton slug={article.slug} />
+      </div>
     </div>
 
     {excerptParas.length > 0 && (
@@ -307,7 +318,19 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
     text-decoration: none;
   }
   .article-page__link:hover { color: var(--color-accent-hover); }
-  .article-page__cite { margin: var(--space-4) 0; }
+  .article-page__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+  }
+  .article-page__actions-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
   .article-page__excerpt {
     margin: var(--space-6) 0;
     border: 1px solid var(--color-rule);
