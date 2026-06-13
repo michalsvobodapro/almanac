@@ -79,13 +79,6 @@
 
   --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* ── Page texture ────────────────────────────────────────────────────── */
-  /* Faint desaturated film grain (shared across themes; blend mode differs). */
-  --page-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
-  /* Warm light from the top — gives the flat page some depth. */
-  --page-glow: radial-gradient(125% 75% at 50% -8%, #fffdf7 0%, rgba(255,253,247,0) 58%);
-  --grain-blend: multiply;
 }
 
 /* ── Dark: true editorial dark (explicit override) ──────────────────────── */
@@ -119,10 +112,6 @@
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
-
-  /* Subtle warm glow from the top + grain that lightens (screen) on dark. */
-  --page-glow: radial-gradient(125% 75% at 50% -8%, #211d18 0%, rgba(33,29,24,0) 55%);
-  --grain-blend: screen;
 }
 
 /* ── System: follow OS preference when no explicit data-theme ──────────── */
