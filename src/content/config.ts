@@ -109,4 +109,30 @@ const digests = defineCollection({
   }),
 });
 
-export const collections = { articles, digests };
+const weekly = defineCollection({
+  type: 'content',
+  schema: z.object({
+    week: z.string(), // ISO week id, e.g. "2026-W24"
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    rangeStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    rangeEnd: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    builtAt: z.coerce.date(),
+    title: z.string(),
+    dek: z.string(),
+    intro: z.string(),
+    sections: z.array(z.object({ heading: z.string(), body: z.string() })),
+    threads: z.array(z.string()).default([]),
+    articleSlugs: z.array(z.string()).default([]),
+    audio: z.string().optional(),
+    stats: z
+      .object({
+        articles: z.number(),
+        costUsd: z.number(),
+        inputTokens: z.number(),
+        outputTokens: z.number(),
+      })
+      .optional(),
+  }),
+});
+
+export const collections = { articles, digests, weekly };

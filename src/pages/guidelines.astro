@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleGrid from '../components/ArticleGrid.astro';
+import EmptyState from '../components/EmptyState.astro';
+
+// Guideline watch — every story the editor flagged as bearing on a clinical
+// practice guideline (EFP/ESE/ČSK/ADA/FDI …). Build-time; newest first.
+const flagged = (await getCollection('articles'))
+  .filter((a) => a.data.guidelineFlag)
+  .sort(
+    (a, b) =>
+      b.data.digestDate.localeCompare(a.data.digestDate) || a.data.rank - b.data.rank,
+  );
+---
+
+<BaseLayout
+  title="Guideline watch"
+  description="Evidence that touches clinical practice guidelines, tracked over time."
+>
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Guideline watch</span>
+      <h1>Guideline watch</h1>
+      <p class="section-head__sub">
+        Stories that bear on a clinical practice guideline — new, revised, or directly
+        challenged by the evidence. The changes worth knowing before they reach the textbooks.
+      </p>
+    </header>
+
+    {flagged.length > 0 ? (
+      <ArticleGrid articles={flagged} />
+    ) : (
+      <EmptyState
+        title="Nothing flagged yet"
+        message="Guideline-relevant stories collect here as they're published."
+      />
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: var(--space-7); }
+  .section-head h1 { margin: var(--space-2) 0; }
+  .section-head__sub { font-size: var(--fs-md); color: var(--color-text-muted); max-width: 62ch; margin: 0; }
+</style>

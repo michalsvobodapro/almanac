@@ -1,0 +1,127 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleGrid from '../../components/ArticleGrid.astro';
+import { formatDate } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const weeks = await getCollection('weekly');
+  return weeks.map((entry) => ({ params: { week: entry.data.week }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+interface Props { entry: CollectionEntry<'weekly'> }
+const { entry } = Astro.props;
+const { data } = entry;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const allArticles = await getCollection('articles');
+const refs = data.articleSlugs
+  .map((s) => allArticles.find((a) => a.slug === s))
+  .filter((a): a is NonNullable<typeof a> => a !== undefined);
+const range = `${formatDate(data.rangeStart)} – ${formatDate(data.rangeEnd)}`;
+---
+
+<BaseLayout title={data.title} description={data.dek}>
+  <article class="container container--narrow">
+    <header class="weekly-head">
+      <span class="kicker">Weekly · {range}</span>
+      <h1 class="weekly-head__title">{data.title}</h1>
+      <p class="weekly-head__dek">{data.dek}</p>
+      {data.audio && (
+        <div class="weekly-audio">
+          <span class="weekly-audio__label">Listen</span>
+          <audio controls preload="none" src={`${base}${data.audio}`}></audio>
+        </div>
+      )}
+    </header>
+
+    <p class="weekly-intro">{data.intro}</p>
+
+    <div class="weekly-body prose">
+      {data.sections.map((s) => (
+        <section class="weekly-section">
+          <h2 class="weekly-section__head">{s.heading}</h2>
+          <p>{s.body}</p>
+        </section>
+      ))}
+    </div>
+
+    {data.threads.length > 0 && (
+      <p class="weekly-threads">
+        <span class="weekly-threads__label">Threads that advanced:</span>
+        {data.threads.join(' · ')}
+      </p>
+    )}
+  </article>
+
+  {refs.length > 0 && (
+    <div class="container">
+      <h2 class="weekly-refs__head">This week's stories</h2>
+      <ArticleGrid articles={refs} />
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .weekly-head { margin-bottom: var(--space-6); }
+  .weekly-head__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, var(--fs-3xl));
+    font-weight: 600;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.02em;
+    margin: var(--space-3) 0;
+    text-wrap: balance;
+  }
+  .weekly-head__dek {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 62ch;
+  }
+  .weekly-audio {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+  .weekly-audio__label {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+  }
+  .weekly-audio audio { height: 36px; }
+  .weekly-intro {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: var(--lh-snug);
+    margin: var(--space-6) 0;
+  }
+  .weekly-section { margin: var(--space-6) 0; }
+  .weekly-section__head {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    margin: 0 0 var(--space-3);
+  }
+  .weekly-threads {
+    margin: var(--space-6) 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-rule);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+  }
+  .weekly-threads__label { font-weight: 600; color: var(--color-text); margin-right: var(--space-2); }
+  .weekly-refs__head {
+    font-size: var(--fs-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin: var(--space-8) 0 var(--space-5);
+    font-weight: 600;
+  }
+</style>

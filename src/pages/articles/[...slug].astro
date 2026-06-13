@@ -6,9 +6,13 @@ import EvidenceBadge from '../../components/EvidenceBadge.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import RelatedRail from '../../components/RelatedRail.astro';
 import CiteButtons from '../../components/CiteButtons.astro';
+import FlashcardButton from '../../components/FlashcardButton.astro';
+import SaveButton from '../../components/SaveButton.astro';
 import DateLine from '../../components/DateLine.astro';
 import { readingMinutes } from '../../lib/readingTime';
 import { citationVancouver, citationBibtex } from '../../lib/citation';
+import { cardFront, cardBack } from '../../lib/anki';
+import { buildArcs, findArc } from '../../lib/arcs';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -39,6 +43,9 @@ const next =
   here >= 0 && here < ordered.length - 1
     ? allArticles.find((a) => a.slug === ordered[here + 1]) ?? null
     : null;
+
+// Story-arc context: is this story part of a tracked research thread?
+const arcHit = findArc(buildArcs(allArticles), article.slug);
 
 const minutes = readingMinutes(data.summary, data.summaryDeep, data.excerptFull);
 const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
@@ -93,6 +100,16 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       </aside>
     )}
 
+    {arcHit && (
+      <a class="thread-banner" href={`${base}/threads/${arcHit.arc.id}/`}>
+        <span class="thread-banner__eyebrow">Part of a thread</span>
+        <span class="thread-banner__label">{arcHit.arc.label}</span>
+        <span class="thread-banner__pos">
+          {arcHit.index + 1} of {arcHit.arc.articles.length} →
+        </span>
+      </a>
+    )}
+
     {deepParas.length > 0 && (
       <div class="article-page__deep prose">
         {deepParas.map((p) => <p>{p}</p>)}
@@ -110,8 +127,16 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
       </a>
     </div>
 
-    <div class="article-page__cite">
+    <div class="article-page__actions">
       <CiteButtons vancouver={citationVancouver(data)} bibtex={citationBibtex(data)} />
+      <div class="article-page__actions-right">
+        <FlashcardButton
+          front={cardFront(data)}
+          back={cardBack(data)}
+          filename={`almanac-${article.slug}.csv`}
+        />
+        <SaveButton slug={article.slug} />
+      </div>
     </div>
 
     {excerptParas.length > 0 && (
@@ -221,6 +246,34 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
     line-height: var(--lh-snug);
     color: var(--color-text);
   }
+
+  /* Story-arc banner — this story is part of a tracked research thread. */
+  .thread-banner {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin: var(--space-5) 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--color-rule-strong);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+  .thread-banner:hover {
+    border-color: var(--color-accent);
+    background: color-mix(in oklab, var(--color-accent) 4%, transparent);
+  }
+  .thread-banner__eyebrow {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+  }
+  .thread-banner__label { font-family: var(--font-display); font-weight: 600; }
+  .thread-banner__pos { margin-left: auto; font-size: var(--fs-sm); color: var(--color-accent); white-space: nowrap; }
   .article-page__title {
     font-size: clamp(1.75rem, 4vw, var(--fs-3xl));
     font-weight: 600;
@@ -265,7 +318,19 @@ const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim(
     text-decoration: none;
   }
   .article-page__link:hover { color: var(--color-accent-hover); }
-  .article-page__cite { margin: var(--space-4) 0; }
+  .article-page__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+  }
+  .article-page__actions-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
   .article-page__excerpt {
     margin: var(--space-6) 0;
     border: 1px solid var(--color-rule);

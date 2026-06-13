@@ -192,6 +192,36 @@ class DigestFrontmatter(BaseModel):
     stats: DigestStats
 
 
+class WeeklySection(BaseModel):
+    heading: str
+    body: str
+
+
+class WeeklyStats(BaseModel):
+    articles: int
+    costUsd: float
+    inputTokens: int
+    outputTokens: int
+
+
+class WeeklyFrontmatter(BaseModel):
+    """Mirrors the Zod `weekly` collection schema in src/content/config.ts."""
+
+    week: str  # ISO week id, e.g. "2026-W24"
+    date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")  # the day it was built
+    rangeStart: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    rangeEnd: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    builtAt: datetime
+    title: str
+    dek: str
+    intro: str
+    sections: list[WeeklySection]
+    threads: list[str] = Field(default_factory=list)
+    articleSlugs: list[str] = Field(default_factory=list)
+    audio: str | None = None
+    stats: WeeklyStats | None = None
+
+
 class SourceStatusEntry(BaseModel):
     id: str
     name: str

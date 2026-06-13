@@ -129,6 +129,27 @@ const ogUrl = new URL(ogImage ?? `${import.meta.env.BASE_URL.replace(/\/$/, '')}
           }, { threshold: 0.6 });
           cards.forEach((c) => io.observe(c));
         }
+
+        // Save-for-later — toggle localStorage `almanac.saved` from any save button.
+        const SKEY = 'almanac.saved';
+        const savedSet = () =>
+          new Set((localStorage.getItem(SKEY) || '').split(' ').filter(Boolean));
+        const initial = savedSet();
+        document.querySelectorAll<HTMLButtonElement>('.save-btn[data-save-slug]').forEach((btn) => {
+          const slug = btn.getAttribute('data-save-slug');
+          if (slug && initial.has(slug)) btn.setAttribute('aria-pressed', 'true');
+          btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            if (!slug) return;
+            const s = savedSet();
+            if (s.has(slug)) s.delete(slug);
+            else s.add(slug);
+            if (s.size) localStorage.setItem(SKEY, [...s].join(' '));
+            else localStorage.removeItem(SKEY);
+            btn.setAttribute('aria-pressed', s.has(slug) ? 'true' : 'false');
+          });
+        });
       })();
     </script>
   </body>

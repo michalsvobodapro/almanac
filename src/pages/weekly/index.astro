@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { formatDate } from '../../lib/format';
+
+const weeks = (await getCollection('weekly')).sort((a, b) =>
+  b.data.date.localeCompare(a.data.date),
+);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Weekly" description="The week in dentistry, synthesized every Sunday.">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Weekly</span>
+      <h1>The week in dentistry</h1>
+      <p class="section-head__sub">
+        Every Sunday: what mattered this week and why — the threads that advanced and the
+        evidence that shifted, not just the headlines.
+      </p>
+    </header>
+
+    {weeks.length > 0 ? (
+      <ul class="weekly-list" role="list">
+        {weeks.map((w) => (
+          <li class="weekly-item">
+            <a class="weekly-item__link" href={`${base}/weekly/${w.data.week}/`}>
+              <span class="weekly-item__range">
+                {formatDate(w.data.rangeStart)} – {formatDate(w.data.rangeEnd)}
+                {w.data.audio ? <span class="weekly-item__audio">· audio</span> : null}
+              </span>
+              <h2 class="weekly-item__title">{w.data.title}</h2>
+              <p class="weekly-item__dek">{w.data.dek}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <EmptyState title="No weekly yet" message="The first weekly synthesis lands this Sunday." />
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: var(--space-7); }
+  .section-head h1 { margin: var(--space-2) 0; }
+  .section-head__sub { font-size: var(--fs-md); color: var(--color-text-muted); max-width: 62ch; margin: 0; }
+  .weekly-list { margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .weekly-item { border-bottom: 1px solid var(--color-rule); }
+  .weekly-item:first-child { border-top: 1px solid var(--color-rule); }
+  .weekly-item__link { display: block; padding: var(--space-5) 0; text-decoration: none; }
+  .weekly-item__range {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-subtle);
+  }
+  .weekly-item__audio { color: var(--color-accent); }
+  .weekly-item__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    line-height: var(--lh-snug);
+    margin: var(--space-2) 0;
+    color: var(--color-text);
+  }
+  .weekly-item__link:hover .weekly-item__title { color: var(--color-accent); }
+  .weekly-item__dek { font-size: var(--fs-md); color: var(--color-text-muted); margin: 0; max-width: 66ch; }
+</style>

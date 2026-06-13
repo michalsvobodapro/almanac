@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleGrid from '../../components/ArticleGrid.astro';
+import CategoryBadge from '../../components/CategoryBadge.astro';
+import { formatDate } from '../../lib/format';
+import { buildArcs, type Arc } from '../../lib/arcs';
+
+export const getStaticPaths = (async () => {
+  const arcs = buildArcs(await getCollection('articles'));
+  return arcs.map((arc) => ({ params: { id: arc.id }, props: { arc } }));
+}) satisfies GetStaticPaths;
+
+interface Props { arc: Arc }
+const { arc } = Astro.props;
+// Newest development first.
+const newestFirst = [...arc.articles].reverse();
+const span = arc.firstSeen === arc.lastSeen
+  ? formatDate(arc.firstSeen)
+  : `${formatDate(arc.firstSeen)} – ${formatDate(arc.lastSeen)}`;
+---
+
+<BaseLayout title={`Thread: ${arc.label}`} description={`How the ${arc.label} thread has developed across ${arc.articles.length} stories.`}>
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Thread</span>
+      <h1>{arc.label}</h1>
+      <div class="thread-detail__meta">
+        {arc.categories.map((c) => <CategoryBadge category={c} />)}
+        <span class="thread-detail__span">{arc.articles.length} stories · {span}</span>
+      </div>
+    </header>
+    <ArticleGrid articles={newestFirst} />
+  </div>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: var(--space-6); }
+  .section-head h1 { margin: var(--space-2) 0; }
+  .thread-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+  .thread-detail__span { font-size: var(--fs-sm); color: var(--color-text-subtle); }
+</style>
