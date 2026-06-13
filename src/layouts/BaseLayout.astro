@@ -51,6 +51,19 @@ const ogUrl = new URL(ogImage ?? `${import.meta.env.BASE_URL.replace(/\/$/, '')}
           if (localStorage.getItem('almanac.compactCards') === '1') {
             document.documentElement.classList.add('compact');
           }
+          // Read-state dimming — fade cards already seen, before paint (no FOUC).
+          if (localStorage.getItem('almanac.dimRead') !== 'off') {
+            var read = (localStorage.getItem('almanac.read') || '').split(' ').filter(Boolean);
+            if (read.length) {
+              var sel = read.map(function (s) {
+                return '[data-slug="' + s.replace(/"/g, '\\"') + '"]';
+              }).join(',');
+              var rs = document.createElement('style');
+              rs.id = 'almanac-read-rules';
+              rs.textContent = sel + '{opacity:.5}';
+              document.head.appendChild(rs);
+            }
+          }
           var rules = [];
           (localStorage.getItem('almanac.hiddenSources') || '').split(' ').filter(Boolean).forEach(function (id) {
             rules.push('[data-source-id="' + id.replace(/"/g, '\\"') + '"]{display:none!important}');
@@ -75,5 +88,48 @@ const ogUrl = new URL(ogImage ?? `${import.meta.env.BASE_URL.replace(/\/$/, '')}
       <slot />
     </main>
     <Footer />
+
+    {/* Read-state tracking: marks the current article read on visit, and cards
+        read after a short dwell in the viewport. Dimming itself is applied
+        pre-paint (above) on the next load, so it stays calm within a session. */}
+    <script>
+      (() => {
+        const KEY = 'almanac.read';
+        const CAP = 500;
+        const get = () => (localStorage.getItem(KEY) || '').split(' ').filter(Boolean);
+        const add = (slug: string | null) => {
+          if (!slug) return;
+          let r = get();
+          if (r.includes(slug)) return;
+          r.push(slug);
+          if (r.length > CAP) r = r.slice(r.length - CAP);
+          localStorage.setItem(KEY, r.join(' '));
+        };
+
+        const article = document.querySelector('[data-article-slug]');
+        if (article) add(article.getAttribute('data-article-slug'));
+
+        const cards = document.querySelectorAll<HTMLElement>('[data-slug]');
+        if (cards.length && 'IntersectionObserver' in window) {
+          const timers = new WeakMap<Element, number>();
+          const io = new IntersectionObserver((entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                if (!timers.has(e.target)) {
+                  timers.set(e.target, window.setTimeout(() => {
+                    add(e.target.getAttribute('data-slug'));
+                    io.unobserve(e.target);
+                  }, 1200));
+                }
+              } else {
+                const t = timers.get(e.target);
+                if (t) { clearTimeout(t); timers.delete(e.target); }
+              }
+            }
+          }, { threshold: 0.6 });
+          cards.forEach((c) => io.observe(c));
+        }
+      })();
+    </script>
   </body>
 </html>

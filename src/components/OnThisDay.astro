@@ -1,0 +1,76 @@
+---
+// A quiet "from the archive" card resurfacing one older edition's lead story.
+// Pure build-time lookup (the home page picks the article) — the calm delight
+// that replaces an engagement streak.
+import type { CollectionEntry } from 'astro:content';
+import CategoryBadge from './CategoryBadge.astro';
+import { formatDate } from '../lib/format';
+
+interface Props { article: CollectionEntry<'articles'>; label: string; date: string; }
+const { article, label, date } = Astro.props;
+const { data } = article;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = `${base}/articles/${article.slug}/`;
+---
+
+<section class="otd" aria-label="From the archive">
+  <div class="otd__head">
+    <span class="otd__kicker">{label}</span>
+    <time class="otd__date" datetime={date}>{formatDate(date)}</time>
+  </div>
+  <div class="otd__card" data-slug={article.slug}>
+    <CategoryBadge category={data.category} />
+    <h3 class="otd__title"><a href={href}>{data.title}</a></h3>
+    <p class="otd__summary">{data.summary}</p>
+  </div>
+</section>
+
+<style>
+  .otd {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-rule);
+  }
+  .otd__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .otd__kicker {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+  .otd__date { font-size: var(--fs-sm); color: var(--color-text-subtle); }
+  .otd__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+  }
+  .otd__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    line-height: var(--lh-snug);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .otd__title a { color: var(--color-text); text-decoration: none; }
+  .otd__title a:hover { color: var(--color-accent); }
+  .otd__summary {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    line-height: var(--lh-base);
+    margin: 0;
+    max-width: 70ch;
+  }
+</style>

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroStory from '../components/HeroStory.astro';
 import ArticleGrid from '../components/ArticleGrid.astro';
+import OnThisDay from '../components/OnThisDay.astro';
 import EmptyState from '../components/EmptyState.astro';
 import { formatDate } from '../lib/format';
 import { selectWindow } from '../lib/window';
@@ -38,6 +39,53 @@ const description =
   storyCount > 0
     ? `Almanac — the past week in dentistry, ${storyCount} hand-picked stories.`
     : undefined;
+
+// On-this-day: resurface one older edition's lead, closest to a meaningful
+// anniversary (1y → 6m → 3m → 1m), else the oldest edition once it's >3 weeks
+// old. Build-time only; gracefully renders nothing until the archive is deep
+// enough. Excludes anything already in the rolling feed window.
+const DAY = 86_400_000;
+const now = new Date();
+const shownSlugs = new Set(flat.map((a) => a.slug));
+const nonEmptyDigests = allDigests.filter((d) => d.data.articleSlugs.length > 0);
+function monthsAgo(n: number): Date {
+  const d = new Date(now);
+  d.setMonth(d.getMonth() - n);
+  return d;
+}
+function nearestEdition(target: Date, withinDays: number) {
+  let best: (typeof nonEmptyDigests)[number] | null = null;
+  let bestDiff = Infinity;
+  for (const d of nonEmptyDigests) {
+    const diff = Math.abs(new Date(d.data.date).getTime() - target.getTime());
+    if (diff < bestDiff) { bestDiff = diff; best = d; }
+  }
+  return best && bestDiff <= withinDays * DAY ? best : null;
+}
+const anniversaries = [
+  { months: 12, label: 'One year ago in Almanac' },
+  { months: 6, label: 'Six months ago in Almanac' },
+  { months: 3, label: 'Three months ago in Almanac' },
+  { months: 1, label: 'One month ago in Almanac' },
+];
+let otdDigest = null;
+let otdLabel = '';
+for (const a of anniversaries) {
+  const hit = nearestEdition(monthsAgo(a.months), 12);
+  if (hit) { otdDigest = hit; otdLabel = a.label; break; }
+}
+if (!otdDigest) {
+  const oldest = [...nonEmptyDigests].sort((a, b) => a.data.date.localeCompare(b.data.date))[0];
+  if (oldest && now.getTime() - new Date(oldest.data.date).getTime() > 21 * DAY) {
+    otdDigest = oldest;
+    otdLabel = 'From the archive';
+  }
+}
+const otdArticle = otdDigest
+  ? (allArticles.find((a) => a.slug === otdDigest!.data.heroSlug) ??
+     allArticles.find((a) => a.slug === otdDigest!.data.articleSlugs[0]) ?? null)
+  : null;
+const showOtd = otdArticle && !shownSlugs.has(otdArticle.slug);
 ---
 
 <BaseLayout description={description}>
@@ -62,6 +110,10 @@ const description =
           message="The first edition lands tomorrow at 06:00 Prague."
         />
       )
+    )}
+
+    {showOtd && otdArticle && otdDigest && (
+      <OnThisDay article={otdArticle} label={otdLabel} date={otdDigest.data.date} />
     )}
   </div>
 </BaseLayout>
