@@ -53,7 +53,7 @@ const deepParas = (data.summaryDeep ?? '').split(/\n{2,}/).map((p) => p.trim()).
 const excerptParas = (data.excerptFull ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
 ---
 
-<BaseLayout title={data.title} description={data.summary} ogImage={coverHref ?? undefined}>
+<BaseLayout title={data.title} description={data.summary} ogImage={`${base}/og/articles/${article.slug}.png`}>
   {coverHref && (
     <div class="article-cover">
       <img src={coverHref} alt={data.coverAlt ?? ''} loading="eager" decoding="async" />

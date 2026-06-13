@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Masthead from '../components/Masthead.astro';
 import HeroStory from '../components/HeroStory.astro';
 import ArticleGrid from '../components/ArticleGrid.astro';
 import OnThisDay from '../components/OnThisDay.astro';
@@ -90,6 +91,8 @@ const showOtd = otdArticle && !shownSlugs.has(otdArticle.slug);
 
 <BaseLayout description={description}>
   <div class="container">
+    <Masthead date={latestDigest?.data.date ?? null} storyCount={storyCount} />
+
     {hero && <HeroStory article={hero} />}
 
     {latestDigest && (

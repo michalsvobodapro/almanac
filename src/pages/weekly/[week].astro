@@ -22,7 +22,7 @@ const refs = data.articleSlugs
 const range = `${formatDate(data.rangeStart)} – ${formatDate(data.rangeEnd)}`;
 ---
 
-<BaseLayout title={data.title} description={data.dek}>
+<BaseLayout title={data.title} description={data.dek} ogImage={`${base}/og/weekly/${data.week}.png`}>
   <article class="container container--narrow">
     <header class="weekly-head">
       <span class="kicker">Weekly · {range}</span>
