@@ -10,12 +10,16 @@ A static news portal aggregating dentistry news across six specialties (conserva
 
 - **Site:** Astro 4 (static output), TypeScript strict, zero JS by default
 - **Pipeline:** Python 3.12 via `uv`, Pydantic v2 for schemas
-- **AI:** Claude Sonnet 4.6 (`claude-sonnet-4-6`), tool-forced JSON output
+- **AI:** Two-model pipeline, both tool-forced JSON:
+  - **Triage/grade** — Claude Haiku 4.5 (`claude-haiku-4-5`, `scripts/triage.py`) scores *every* in-window item (keep/relevance/category/evidence type+grade/topic thread) so the editorial pass only sees a graded shortlist (`SHORTLIST_SIZE`). Evidence type is grounded in publication-type metadata (EuropePMC `pubTypeList` / OpenAlex `type`) where present.
+  - **Editorial** — Claude Sonnet 4.6 (`claude-sonnet-4-6`, `scripts/claude_rank.py`) writes summaries + a `clinicalTakeaway` + `guidelineFlag` over the shortlist.
+  - Each stage degrades independently: a triage failure proceeds un-graded; the digest never fails on one stage.
+- **Sources:** RSS/Atom + CrossRef (by eISSN) + **EuropePMC** & **OpenAlex** JSON APIs (open, keyless — the working replacement for the reCAPTCHA-walled PubMed RSS). See `sources.yaml`; EuropePMC queries are TITLE-anchored + `SRC:MED` for precision.
 - **Hosting:** GitHub Pages via Actions
 
 ## Conventions
 
-- **Schemas:** Truth lives in `src/content/config.ts` (Zod, Astro reads). Mirrored in `scripts/models.py` (Pydantic, pipeline writes). Update both together. The `CATEGORIES` enum (`conservative | endodontics | periodontology | implantology | orthodontics | other`) is defined in both — keep in sync.
+- **Schemas:** Truth lives in `src/content/config.ts` (Zod, Astro reads). Mirrored in `scripts/models.py` (Pydantic, pipeline writes). Update both together. The `CATEGORIES` enum (`conservative | endodontics | periodontology | implantology | orthodontics | other`) and `EVIDENCE_TYPES`/`EVIDENCE_GRADES` enums are defined in both — keep in sync. Evidence/takeaway fields (`evidenceType`, `evidenceGrade`, `sampleSize`, `evidenceNote`, `topicThread`, `clinicalTakeaway`, `guidelineFlag`) are all optional with graceful "unrated" fallbacks so pre-migration articles render cleanly.
 - **Hydration:** Only `ThemeToggle`, `SourceFilter`, `LandingPicker` ship JS. Everything else is zero-JS Astro components.
 - **Settings:** Client-side only. localStorage keys prefixed `almanac.*`. No backend, no accounts.
 - **Languages:** Articles preserve source language (EN or CS). Site chrome (nav, footer, settings) is English.

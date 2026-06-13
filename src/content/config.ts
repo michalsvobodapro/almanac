@@ -20,6 +20,39 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   other: 'Other',
 };
 
+// Mirrors EvidenceType in scripts/models.py — keep the two in sync.
+export const EVIDENCE_TYPES = [
+  'guideline',
+  'systematic-review',
+  'rct',
+  'cohort',
+  'case-control',
+  'lab',
+  'news',
+] as const;
+
+export type EvidenceType = (typeof EVIDENCE_TYPES)[number];
+
+export const EVIDENCE_TYPE_LABELS: Record<EvidenceType, string> = {
+  guideline: 'Guideline',
+  'systematic-review': 'Systematic review',
+  rct: 'RCT',
+  cohort: 'Cohort',
+  'case-control': 'Case-control',
+  lab: 'Lab study',
+  news: 'News / opinion',
+};
+
+export const EVIDENCE_GRADES = ['high', 'moderate', 'low', 'na'] as const;
+export type EvidenceGrade = (typeof EVIDENCE_GRADES)[number];
+
+export const EVIDENCE_GRADE_LABELS: Record<EvidenceGrade, string> = {
+  high: 'High',
+  moderate: 'Moderate',
+  low: 'Low',
+  na: 'Not graded',
+};
+
 const articles = defineCollection({
   type: 'content',
   schema: z.object({
@@ -43,6 +76,15 @@ const articles = defineCollection({
     author: z.string().optional(),
     tags: z.array(z.string()).default([]),
     relatedSlugs: z.array(z.string()).default([]),
+    // Evidence appraisal — all optional so pre-migration articles render as
+    // "unrated". Mirrors ArticleFrontmatter in scripts/models.py.
+    evidenceType: z.enum(EVIDENCE_TYPES).optional(),
+    evidenceGrade: z.enum(EVIDENCE_GRADES).default('na'),
+    sampleSize: z.number().int().optional(),
+    evidenceNote: z.string().optional(),
+    topicThread: z.string().optional(),
+    clinicalTakeaway: z.string().optional(),
+    guidelineFlag: z.boolean().default(false),
   }),
 });
 
