@@ -1,0 +1,82 @@
+---
+// Homepage masthead — a newspaper-style banner with the wordmark, the edition
+// date, a six-specialty colour motif, and the strapline. On-page SVG/CSS only.
+import { formatDate } from '../lib/format';
+
+interface Props { date?: string | null; storyCount?: number }
+const { date, storyCount } = Astro.props;
+
+const SPECIALTIES = [
+  'conservative', 'endodontics', 'periodontology',
+  'implantology', 'orthodontics', 'other',
+] as const;
+---
+
+<section class="masthead" aria-label="Almanac masthead">
+  <div class="masthead__rule">
+    <span class="masthead__edition">{date ? formatDate(date) : 'Daily edition'}</span>
+    <span class="masthead__dots" aria-hidden="true">
+      {SPECIALTIES.map((c) => <span class={`masthead__dot masthead__dot--${c}`}></span>)}
+    </span>
+  </div>
+  <h1 class="masthead__wordmark">Almanac</h1>
+  <p class="masthead__tag">
+    A daily brief on dentistry — curated, evidence-graded, threaded.
+    {storyCount ? <span class="masthead__count"> {storyCount} stories this week.</span> : null}
+  </p>
+</section>
+
+<style>
+  .masthead {
+    padding: var(--space-6) 0 var(--space-7);
+    margin-bottom: var(--space-6);
+    border-bottom: 2px solid var(--color-text);
+  }
+  .masthead__rule {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-rule);
+    margin-bottom: var(--space-5);
+  }
+  .masthead__edition {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+  }
+  .masthead__dots { display: inline-flex; gap: 7px; }
+  .masthead__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dot, var(--color-rule-strong)); }
+  .masthead__dot--conservative   { --dot: var(--color-cat-conservative); }
+  .masthead__dot--endodontics    { --dot: var(--color-cat-endodontics); }
+  .masthead__dot--periodontology { --dot: var(--color-cat-periodontology); }
+  .masthead__dot--implantology   { --dot: var(--color-cat-implantology); }
+  .masthead__dot--orthodontics   { --dot: var(--color-cat-orthodontics); }
+  .masthead__dot--other          { --dot: var(--color-cat-other); }
+  .masthead__wordmark {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 11vw, 6.5rem);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--color-text);
+  }
+  .masthead__tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-lg);
+    color: var(--color-text-muted);
+    margin: var(--space-4) 0 0;
+    max-width: 62ch;
+  }
+  .masthead__count { color: var(--color-accent); font-style: normal; font-weight: 500; }
+  @media (max-width: 640px) {
+    .masthead { padding-top: var(--space-4); }
+    .masthead__tag { font-size: var(--fs-md); }
+  }
+</style>

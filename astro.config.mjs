@@ -12,5 +12,7 @@ export default defineConfig({
   },
   vite: {
     server: { fs: { allow: ['..'] } },
+    // @resvg/resvg-js is a native module — don't bundle it for SSR/build.
+    ssr: { external: ['@resvg/resvg-js'] },
   },
 });
