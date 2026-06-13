@@ -10,7 +10,6 @@ const { article } = Astro.props;
 const { data } = article;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const href = `${base}/articles/${article.slug}/`;
-const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
 ---
 
 <article
@@ -19,13 +18,7 @@ const coverHref = data.coverImage ? `${base}${data.coverImage}` : null;
   data-category={data.category}
   data-slug={article.slug}
 >
-  {coverHref ? (
-    <a class="article-card__cover" href={href} aria-hidden="true" tabindex="-1">
-      <img src={coverHref} alt={data.coverAlt ?? ''} loading="lazy" decoding="async" />
-    </a>
-  ) : (
-    <span class={`article-card__band article-card__band--${data.category}`} aria-hidden="true"></span>
-  )}
+  <span class={`article-card__band article-card__band--${data.category}`} aria-hidden="true"></span>
   <div class="article-card__body">
     <div class="article-card__head">
       <CategoryBadge category={data.category} />

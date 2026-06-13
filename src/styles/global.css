@@ -35,6 +35,14 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  /* Warm top glow + faint film grain over the base colour, so the page reads
+     as textured paper / deep stock rather than a flat fill. */
+  background-color: var(--color-bg);
+  background-image: var(--page-grain), var(--page-glow);
+  background-repeat: repeat, no-repeat;
+  background-size: 220px 220px, 100% 100%;
+  background-attachment: fixed, fixed;
+  background-blend-mode: var(--grain-blend), normal;
 }
 
 main {

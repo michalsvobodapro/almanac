@@ -28,10 +28,27 @@ const SPECIALTIES = [
 
 <style>
   .masthead {
+    position: relative;
+    overflow: hidden;
     padding: var(--space-6) 0 var(--space-7);
     margin-bottom: var(--space-6);
     border-bottom: 2px solid var(--color-text);
   }
+  .masthead::after {
+    content: "A";
+    position: absolute;
+    right: -1.5rem;
+    top: 48%;
+    transform: translateY(-46%);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 23rem;
+    line-height: 1;
+    color: color-mix(in oklab, var(--color-text) 5%, transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .masthead > * { position: relative; z-index: 1; }
   .masthead__rule {
     display: flex;
     align-items: center;
