@@ -43,9 +43,23 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # ── Audio toolchain (best-effort; weekly.py skips audio if absent) ──
-      - name: Install audio tools
+      - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
         continue-on-error: true
+
+      - name: Set up Piper TTS
+        continue-on-error: true
+        run: |
+          set -e
+          mkdir -p "$HOME/piper" && cd "$HOME/piper"
+          curl -fsSL -o piper.tgz \
+            https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz
+          tar xzf piper.tgz
+          BASE=https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium
+          curl -fsSL -o voice.onnx      "$BASE/en_US-lessac-medium.onnx"
+          curl -fsSL -o voice.onnx.json "$BASE/en_US-lessac-medium.onnx.json"
+          echo "PIPER_BIN=$HOME/piper/piper/piper" >> "$GITHUB_ENV"
+          echo "PIPER_VOICE=$HOME/piper/voice.onnx" >> "$GITHUB_ENV"
 
       # ── Run weekly synthesis ───────────────────────────────────────────
       - name: Run weekly synthesis
