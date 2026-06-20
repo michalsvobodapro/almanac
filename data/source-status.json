@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-06-19T02:09:04.959175+00:00",
+  "lastRunAt": "2026-06-20T01:33:52.280336+00:00",
   "sources": [
     {
       "id": "bdj",
@@ -7,7 +7,7 @@
       "url": "https://api.crossref.org/journals/1476-5373/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:49.964974Z",
+      "lastFetched": "2026-06-20T01:33:36.857841Z",
       "itemsLastRun": 30
     },
     {
@@ -16,7 +16,7 @@
       "url": "https://api.crossref.org/journals/2056-807X/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:51.513830Z",
+      "lastFetched": "2026-06-20T01:33:37.505351Z",
       "itemsLastRun": 8
     },
     {
@@ -25,7 +25,7 @@
       "url": "https://api.crossref.org/journals/1476-5446/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:52.527851Z",
+      "lastFetched": "2026-06-20T01:33:37.624218Z",
       "itemsLastRun": 5
     },
     {
@@ -34,7 +34,7 @@
       "url": "https://api.crossref.org/journals/2049-3169/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:53.036318Z",
+      "lastFetched": "2026-06-20T01:33:38.131856Z",
       "itemsLastRun": 4
     },
     {
@@ -44,7 +44,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-06-19T02:08:53.458948Z",
+      "lastFetched": "2026-06-20T01:33:38.411219Z",
       "itemsLastRun": 14
     },
     {
@@ -54,8 +54,8 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-06-19T02:08:53.984233Z",
-      "itemsLastRun": 9
+      "lastFetched": "2026-06-20T01:33:38.997776Z",
+      "itemsLastRun": 8
     },
     {
       "id": "iej",
@@ -64,7 +64,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-06-19T02:08:55.296239Z",
+      "lastFetched": "2026-06-20T01:33:39.443338Z",
       "itemsLastRun": 21
     },
     {
@@ -73,7 +73,7 @@
       "url": "https://api.crossref.org/journals/1600-0528/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:56.196807Z",
+      "lastFetched": "2026-06-20T01:33:40.435059Z",
       "itemsLastRun": 8
     },
     {
@@ -82,7 +82,7 @@
       "url": "https://api.crossref.org/journals/1600-0714/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:57.578065Z",
+      "lastFetched": "2026-06-20T01:33:40.700236Z",
       "itemsLastRun": 8
     },
     {
@@ -91,8 +91,8 @@
       "url": "https://api.crossref.org/journals/1600-0722/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:08:59.137096Z",
-      "itemsLastRun": 6
+      "lastFetched": "2026-06-20T01:33:40.983272Z",
+      "itemsLastRun": 7
     },
     {
       "id": "epmc-perio",
@@ -101,7 +101,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-06-19T02:08:59.788284Z",
+      "lastFetched": "2026-06-20T01:33:46.009023Z",
       "itemsLastRun": 12
     },
     {
@@ -111,7 +111,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-06-19T02:09:01.059482Z",
+      "lastFetched": "2026-06-20T01:33:47.463567Z",
       "itemsLastRun": 12
     },
     {
@@ -121,7 +121,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "implantology",
-      "lastFetched": "2026-06-19T02:09:01.514574Z",
+      "lastFetched": "2026-06-20T01:33:47.777080Z",
       "itemsLastRun": 12
     },
     {
@@ -131,7 +131,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "conservative",
-      "lastFetched": "2026-06-19T02:09:01.825466Z",
+      "lastFetched": "2026-06-20T01:33:48.088004Z",
       "itemsLastRun": 12
     },
     {
@@ -141,7 +141,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "orthodontics",
-      "lastFetched": "2026-06-19T02:09:02.060384Z",
+      "lastFetched": "2026-06-20T01:33:48.356083Z",
       "itemsLastRun": 10
     },
     {
@@ -151,7 +151,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "other",
-      "lastFetched": "2026-06-19T02:09:02.303578Z",
+      "lastFetched": "2026-06-20T01:33:48.637390Z",
       "itemsLastRun": 12
     },
     {
@@ -160,7 +160,7 @@
       "url": "https://api.openalex.org/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:09:02.694039Z",
+      "lastFetched": "2026-06-20T01:33:48.956768Z",
       "itemsLastRun": 20
     },
     {
@@ -170,7 +170,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-06-19T02:09:03.315475Z",
+      "lastFetched": "2026-06-20T01:33:49.814062Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -180,7 +180,7 @@
       "url": "https://www.dentistry.co.uk/feed/",
       "language": "en",
       "status": "error",
-      "lastFetched": "2026-06-19T02:09:03.545815Z",
+      "lastFetched": "2026-06-20T01:33:50.078693Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -190,7 +190,7 @@
       "url": "https://www.dentalproductsreport.com/rss/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:09:04.047891Z",
+      "lastFetched": "2026-06-20T01:33:50.618506Z",
       "itemsLastRun": 30
     },
     {
@@ -199,8 +199,8 @@
       "url": "https://www.dentalnews.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:09:04.295765Z",
-      "itemsLastRun": 0
+      "lastFetched": "2026-06-20T01:33:51.299422Z",
+      "itemsLastRun": 10
     },
     {
       "id": "dental-tribune",
@@ -208,7 +208,7 @@
       "url": "https://www.dental-tribune.com/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-06-19T02:09:04.383657Z",
+      "lastFetched": "2026-06-20T01:33:51.629569Z",
       "itemsLastRun": 1
     }
   ]
