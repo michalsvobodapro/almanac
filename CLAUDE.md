@@ -27,7 +27,7 @@ A static news portal aggregating dentistry news across six specialties (conserva
 - **Design:** Editorial / magazine. Warm paper light + true editorial dark. Fraunces (display) + Inter (body), both self-hosted woff2. No Google Fonts at runtime. **Not** Alveodont's clinical blue.
 - **Cron drift:** Accepted (GitHub schedules are best-effort). Cron is `23 23 * * *` UTC ≈ local midnight in Prague — the earliest slot that's already "tomorrow" in `Europe/Prague` (which `digest.py` uses to date the edition), so the run can't generate the previous day. The typical +2.5–5h GitHub delay lands it ~03:00–06:00 local, before a 06:00 wake-up on a normal day. Year-round; DST drift accepted. A hard "done by 06:00" guarantee would need an external trigger.
 
-## Workflow rules (inherited from ~/claude/CLAUDE.md)
+## Workflow rules (inherited from ~/dev/CLAUDE.md)
 
 - Never commit to `main` — feature branches only (`feature/`, `fix/`, `chore/`)
 - Push branches to remote immediately after creation
