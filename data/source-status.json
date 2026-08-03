@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-08-02T00:17:23.709755+00:00",
+  "lastRunAt": "2026-08-03T00:16:05.227361+00:00",
   "sources": [
     {
       "id": "bdj",
@@ -7,7 +7,7 @@
       "url": "https://api.crossref.org/journals/1476-5373/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:00.919652Z",
+      "lastFetched": "2026-08-03T00:15:54.923693Z",
       "itemsLastRun": 30
     },
     {
@@ -16,7 +16,7 @@
       "url": "https://api.crossref.org/journals/2056-807X/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:01.199346Z",
+      "lastFetched": "2026-08-03T00:15:55.423140Z",
       "itemsLastRun": 12
     },
     {
@@ -25,7 +25,7 @@
       "url": "https://api.crossref.org/journals/1476-5446/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:01.348879Z",
+      "lastFetched": "2026-08-03T00:15:55.539157Z",
       "itemsLastRun": 12
     },
     {
@@ -34,7 +34,7 @@
       "url": "https://api.crossref.org/journals/2049-3169/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:01.500810Z",
+      "lastFetched": "2026-08-03T00:15:55.652948Z",
       "itemsLastRun": 5
     },
     {
@@ -44,7 +44,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-08-02T00:17:01.616906Z",
+      "lastFetched": "2026-08-03T00:15:55.821113Z",
       "itemsLastRun": 20
     },
     {
@@ -54,7 +54,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-08-02T00:17:01.862709Z",
+      "lastFetched": "2026-08-03T00:15:56.035276Z",
       "itemsLastRun": 18
     },
     {
@@ -64,7 +64,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-08-02T00:17:02.051416Z",
+      "lastFetched": "2026-08-03T00:15:56.190549Z",
       "itemsLastRun": 20
     },
     {
@@ -73,7 +73,7 @@
       "url": "https://api.crossref.org/journals/1600-0528/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:02.294860Z",
+      "lastFetched": "2026-08-03T00:15:56.340930Z",
       "itemsLastRun": 11
     },
     {
@@ -82,8 +82,8 @@
       "url": "https://api.crossref.org/journals/1600-0714/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:02.484987Z",
-      "itemsLastRun": 11
+      "lastFetched": "2026-08-03T00:15:56.465426Z",
+      "itemsLastRun": 9
     },
     {
       "id": "ejos",
@@ -91,8 +91,8 @@
       "url": "https://api.crossref.org/journals/1600-0722/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:02.653041Z",
-      "itemsLastRun": 4
+      "lastFetched": "2026-08-03T00:15:56.610981Z",
+      "itemsLastRun": 2
     },
     {
       "id": "epmc-perio",
@@ -101,7 +101,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "periodontology",
-      "lastFetched": "2026-08-02T00:17:02.812723Z",
+      "lastFetched": "2026-08-03T00:15:56.743530Z",
       "itemsLastRun": 12
     },
     {
@@ -111,7 +111,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-08-02T00:17:04.002695Z",
+      "lastFetched": "2026-08-03T00:15:59.778670Z",
       "itemsLastRun": 12
     },
     {
@@ -121,7 +121,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "implantology",
-      "lastFetched": "2026-08-02T00:17:04.338259Z",
+      "lastFetched": "2026-08-03T00:16:00.140517Z",
       "itemsLastRun": 12
     },
     {
@@ -131,7 +131,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "conservative",
-      "lastFetched": "2026-08-02T00:17:04.638871Z",
+      "lastFetched": "2026-08-03T00:16:00.464106Z",
       "itemsLastRun": 12
     },
     {
@@ -141,7 +141,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "orthodontics",
-      "lastFetched": "2026-08-02T00:17:04.918441Z",
+      "lastFetched": "2026-08-03T00:16:00.811180Z",
       "itemsLastRun": 10
     },
     {
@@ -151,7 +151,7 @@
       "language": "en",
       "status": "ok",
       "primaryCategory": "other",
-      "lastFetched": "2026-08-02T00:17:05.161729Z",
+      "lastFetched": "2026-08-03T00:16:01.139608Z",
       "itemsLastRun": 12
     },
     {
@@ -160,7 +160,7 @@
       "url": "https://api.openalex.org/works",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:05.441920Z",
+      "lastFetched": "2026-08-03T00:16:01.489559Z",
       "itemsLastRun": 20
     },
     {
@@ -170,7 +170,7 @@
       "language": "en",
       "status": "error",
       "primaryCategory": "endodontics",
-      "lastFetched": "2026-08-02T00:17:06.274349Z",
+      "lastFetched": "2026-08-03T00:16:02.332723Z",
       "itemsLastRun": 0,
       "errorMessage": "HTTP 403"
     },
@@ -180,7 +180,7 @@
       "url": "https://www.dentistry.co.uk/feed/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:06.358541Z",
+      "lastFetched": "2026-08-03T00:16:02.541244Z",
       "itemsLastRun": 0
     },
     {
@@ -189,7 +189,7 @@
       "url": "https://www.dentalproductsreport.com/rss/",
       "language": "en",
       "status": "ok",
-      "lastFetched": "2026-08-02T00:17:07.415157Z",
+      "lastFetched": "2026-08-03T00:16:03.443177Z",
       "itemsLastRun": 30
     },
     {
@@ -197,20 +197,18 @@
       "name": "Dental News",
       "url": "https://www.dentalnews.com/feed/",
       "language": "en",
-      "status": "error",
-      "lastFetched": "2026-08-02T00:17:07.944969Z",
-      "itemsLastRun": 0,
-      "errorMessage": "ConnectTimeout: _ssl.c:993: The handshake operation timed out"
+      "status": "ok",
+      "lastFetched": "2026-08-03T00:16:03.752637Z",
+      "itemsLastRun": 0
     },
     {
       "id": "dental-tribune",
       "name": "Dental Tribune",
       "url": "https://www.dental-tribune.com/feed/",
       "language": "en",
-      "status": "error",
-      "lastFetched": "2026-08-02T00:17:23.037288Z",
-      "itemsLastRun": 0,
-      "errorMessage": "HTTP 415"
+      "status": "ok",
+      "lastFetched": "2026-08-03T00:16:03.882984Z",
+      "itemsLastRun": 1
     }
   ]
 }
